@@ -11,6 +11,7 @@ namespace Features;
 
 use Exceptions\ValidationError;
 
+use Features\Ebay\Utils\Metadata;
 use Features\Ebay\Utils\Routes as Routes ;
 
 class Ebay extends BaseFeature {
@@ -221,5 +222,26 @@ class Ebay extends BaseFeature {
         } );
     }
 
+    /**
+     * Append the filter config to the post params which are coming from the UI.
+     *
+     * @param $filter
+     * @return mixed
+     */
+    public function filterCreateProjectInputFilters( $inputFilter ) {
+        return array_merge( $inputFilter, Metadata::getInputFilter() ) ;
+    }
+
+    /**
+     * This filter is necessary to assign input params to the metadata array when post comes from UI.
+     *
+     * @param $metadata
+     * @param $options
+     */
+    public function createProjectAssignInputMetadata( $metadata, $options ) {
+        $options = \Utils::ensure_keys( $options, array('input'));
+
+        return array_intersect_key( $metadata, array_flip( Metadata::$keys ) ) ;
+    }
 
 }
