@@ -10,8 +10,8 @@ class ReviewTranslationVersion extends React.Component {
 
     }
 
-    componentWillReceiveProps (nextProps) {
-        this.setState({ collapsed : !nextProps.isCurrent, trackChanges : false });
+    static getDerivedStateFromProps(props, state) {
+        return { collapsed : !props.isCurrent, trackChanges : false };
     }
 
     issueMouseEnter ( issue, event, reactid ) {

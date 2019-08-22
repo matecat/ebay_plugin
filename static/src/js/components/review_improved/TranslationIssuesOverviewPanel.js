@@ -4,26 +4,10 @@ class TranslationIssuesOverviewPanel extends React.Component {
     
     constructor(props) {
         super(props);
-        this.state = this.getStateFromSid(this.props.sid);
 
     }
     closePanelClick(e, data) {
         this.props.closePanel();
-    }
-
-    componentWillReceiveProps ( nextProps ) {
-        this.setState( this.getStateFromSid( nextProps.sid ) );
-    } 
-
-    getStateFromSid (sid) {
-        let segment = MateCat.db.segments.by('sid', sid);
-        let original_target = this.getOriginalTarget( segment );
-        return {
-            segment         : segment,
-            original_target : original_target,
-            versions        : this.getVersions( sid )
-        }
-
     }
     getVersions ( sid ) {
         let versions = MateCat.db.segment_versions.findObjects({
@@ -56,27 +40,34 @@ class TranslationIssuesOverviewPanel extends React.Component {
     }
 
     originalTarget () {
-        return { __html : UI.decodePlaceholdersToText( this.state.original_target ) };
+        let segment = MateCat.db.segments.by('sid', this.props.sid);
+        let original_target = this.getOriginalTarget( segment );
+        return { __html : UI.decodePlaceholdersToText( original_target ) };
     }
 
     getTrackChangesForCurrentVersion () {
-        if ( this.state.segment.version_number != '0' ) {
+        let segment = MateCat.db.segments.by('sid', this.props.sid);
+        if ( segment.version_number != '0' ) {
             // no track changes possibile for first version
-            let previous = this.findPreviousVersion( this.state.segment.version_number );
+            let previous = this.findPreviousVersion( segment.version_number );
             return trackChangesHTML(
-                UI.clenaupTextFromPleaceholders(previous.translation),
+                UI.clenaupTextFromPleaceholders( previous.translation ),
                 UI.clenaupTextFromPleaceholders(
-                    window.cleanupSplitMarker( this.state.segment.translation )
+                    window.cleanupSplitMarker( segment.translation )
                 ));
         }
     }
 
     findPreviousVersion ( version_number ) {
-        if ( this.state.segment.version_number !== '0' && version_number !== 0) {
-            return this.state.versions.filter(function (item) {
+        let segment = MateCat.db.segments.by('sid', this.props.sid);
+        let versions = this.getVersions( this.props.sid );
+        if ( segment.version_number !== '0' && version_number !== 0) {
+            return versions.filter(function (item) {
                 return parseInt(item.version_number) === parseInt(version_number) - 1;
             }.bind(this))[0];
-        } else return this.state.versions[this.state.versions.length - 1];
+        } else {
+            return versions[versions.length - 1];
+        }
     }
 
     getTrackChangesForOldVersion (version) {
@@ -90,13 +81,15 @@ class TranslationIssuesOverviewPanel extends React.Component {
     }
 
     getListVersionsReviewImproved() {
-        let previousVersions = this.state.versions.map( function(v) {
+        let versions = this.getVersions( this.props.sid );
+        let segment = MateCat.db.segments.by('sid', this.props.sid);
+        let previousVersions = versions.map( function(v) {
             let key = 'version-' + v.id + '-' + this.props.sid ;
 
             return (
                 <ReviewTranslationVersion
                     trackChangesMarkup={this.getTrackChangesForOldVersion( v )}
-                    sid={this.state.segment.sid}
+                    sid={segment.sid}
                     key={key}
                     versionNumber={v.version_number}
                     isCurrent={false}
@@ -107,11 +100,11 @@ class TranslationIssuesOverviewPanel extends React.Component {
         }.bind(this) );
         let currentVersion = <ReviewTranslationVersion
             trackChangesMarkup={this.getTrackChangesForCurrentVersion()}
-            sid={this.state.segment.sid}
+            sid={segment.sid}
             key={'version-0'}
-            versionNumber={this.state.segment.version_number}
+            versionNumber={segment.version_number}
             isCurrent={true}
-            translation={window.cleanupSplitMarker( this.state.segment.translation ) }
+            translation={window.cleanupSplitMarker( segment.translation ) }
             reviewType={this.props.reviewType}/>
 
         return [currentVersion].concat(previousVersions);

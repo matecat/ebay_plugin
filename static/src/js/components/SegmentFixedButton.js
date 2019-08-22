@@ -12,7 +12,6 @@ class SegmentFixedButton extends React.Component{
         var fixedButton = <li>
                 <a className="button button-fixed status-fixed"
                    onClick={this.handleClick.bind(this)}
-                   href="javascript:;"
                    disabled={this.props.disabled}
                    draggable="false"
                 >

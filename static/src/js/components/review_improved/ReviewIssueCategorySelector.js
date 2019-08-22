@@ -3,15 +3,8 @@ class ReviewIssueCategorySelector extends React.Component{
 
     constructor(props) {
         super(props);
-        this.state = {
-            value : this.props.selectedValue
-        };
-
     }
 
-    componentWillReceiveProps(nextProps) {
-        this.setState({ value: nextProps.selectedValue });
-    }
 
     render() {
         // It may happen for a category to come with no severities. In this case
@@ -31,7 +24,7 @@ class ReviewIssueCategorySelector extends React.Component{
 
             select = <select
                 ref="select"
-                value={this.state.value}
+                value={this.props.selectedValue}
                 autoFocus={this.props.focus}
                 onChange={this.props.severitySelected.bind(null, this.props.category)}
                 name="severities">

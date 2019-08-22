@@ -112,13 +112,13 @@
                     <a id={"segment-" + this.props.segment.sid + "-button-translated "}
                        onClick={( event ) => this.clickOnApprovedButton( event )}
                        data-segmentid={"segment-" + this.props.segment.sid}
-                       href="javascript:;" className="approved"
+                       className="approved"
                     >APPROVED</a>
                     <p>{(UI.isMac) ? 'CMD' : 'CTRL'} ENTER</p>
                 </li>;
             } else if ( currentScore > 0 ) {
                 button = <li className="right">
-                    <a className="button button-reject" href="javascript:;">REJECTED</a>
+                    <a className="button button-reject">REJECTED</a>
                     <p>{(UI.isMac) ? 'CMD' : 'CTRL'}+SHIFT+DOWN</p>
                 </li>;
             }
