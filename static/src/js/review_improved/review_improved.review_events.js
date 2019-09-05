@@ -77,28 +77,28 @@ if ( ReviewImproved.enabled() && config.isReview ) {
     $(document).on('mouseup', 'section.opened .errorTaggingArea', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var segment = new UI.Segment( $(e.target).closest('section'));
+        var segmentId = UI.getSegmentId($(e.target).closest('section'));
         var selection = document.getSelection();
         var container = $(e.target).closest('.errorTaggingArea') ;
 
         if ( textSelectedInsideSelectionArea(selection, container ) )  {
             var selection = getSelectionData( selection, container ) ;
-            SegmentActions.openIssuesPanel({ sid: segment.id,  selection : selection }, true);
+            SegmentActions.openIssuesPanel({ sid: segmentId,  selection : selection }, true);
         }
     });
     function renderButtons(segment) {
         if (segment === undefined) {
-            segment = UI.Segment.find( UI.currentSegmentId );
+            segment = UI.getSegmentById( UI.currentSegmentId );
         }
 
-        var container = segment.el.find('.buttons') ;
+        var container = segment.find('.buttons') ;
         container.empty();
 
-        var currentScore = getLatestScoreForSegment( segment ) ;
+        var currentScore = getLatestScoreForSegment( UI.currentSegmentId ) ;
 
         var buttonData = {
             disabled : !container.hasClass('loaded'),
-            id_segment : segment.id,
+            id_segment : UI.currentSegmentId,
             ctrl : ( (UI.isMac) ? 'CMD' : 'CTRL'),
             show_approve : currentScore == 0,
             show_reject : currentScore > 0
@@ -106,22 +106,18 @@ if ( ReviewImproved.enabled() && config.isReview ) {
 
         var buttonsHTML = MateCat.Templates['review_improved/segment_buttons']( buttonData ) ;
 
-        var data = {
-            versions : versions.findObjects({ id_segment : segment.absId })
-        };
-
         container.append(buttonsHTML);
     }
 
 
 
-    getLatestScoreForSegment = function( segment ) {
-        if (! segment) {
+    getLatestScoreForSegment = function( sid ) {
+        if (! sid) {
             return ;
         }
-        var db_segment = MateCat.db.segments.findObject({ sid : '' + segment.absId });
+        var db_segment = MateCat.db.segments.findObject({ sid : '' + sid });
         var latest_issues = MateCat.db.segment_translation_issues.findObjects({
-            id_segment : parseInt(segment.absId) ,
+            id_segment : parseInt(sid) ,
             translation_version : '' + db_segment.version_number
         });
 
@@ -133,7 +129,7 @@ if ( ReviewImproved.enabled() && config.isReview ) {
     };
 
     var issuesChanged = function( record ) {
-        var segment = UI.Segment.find(record.id_segment);
+        var segment = UI.getSegmentById(record.id_segment);
         if ( segment ) renderButtons( segment ) ;
     };
 

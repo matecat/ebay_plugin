@@ -40,9 +40,9 @@ if ( ReviewImproved.enabled() )
             return status;
         },
 
-        getSegmentVersionsIssuesHandler: function (sid) {
+        getSegmentVersionsIssuesHandler: function (e, data) {
             // TODO Uniform behavior of ReviewExtended and ReviewImproved
-            var segment = SegmentStore.getSegmentByIdToJS(sid);
+            var segment = SegmentStore.getSegmentByIdToJS(data.segmentId);
             SegmentActions.addTranslationIssuesToSegment(segment.id_file, segment.original_sid,  []);
         },
         submitComment : function(id_segment, id_issue, data) {

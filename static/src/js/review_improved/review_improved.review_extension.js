@@ -67,9 +67,6 @@ if ( ReviewImproved.enabled() && config.isReview ) {
         //     UI.currentSegment.trigger('buttonsCreation');
         //
         // },
-        copySuggestionInEditarea : function() {
-            return ;
-        },
         targetContainerSelector : function() {
             return '.errorTaggingArea';
         },

@@ -105,8 +105,7 @@
 
         SegmentButtons.prototype.getReviewImprovedButtons = function () {
             let button;
-            let segment = UI.Segment.find( this.props.segment.sid );
-            let currentScore = ReviewImproved.getLatestScoreForSegment(segment );
+            let currentScore = ReviewImproved.getLatestScoreForSegment(this.props.segment.sid );
             if ( currentScore == 0 ) {
                 button = <li className="right">
                     <a id={"segment-" + this.props.segment.sid + "-button-translated "}

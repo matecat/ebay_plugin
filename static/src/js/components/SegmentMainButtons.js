@@ -40,7 +40,7 @@ class SegmentMainButtons extends React.Component{
         MateCat.db.addListener('segments', ['insert', 'update'], this.handleSegmentUpdate.bind(this) );
         MateCat.db.addListener('segment_translation_issues', ['insert', 'update', 'delete'], this.updateButtonToShow.bind(this) );
 
-        var el = UI.Segment.findEl(this.props.sid);
+        var el = UI.getSegmentById(this.props.sid);
         el.on( 'modified', this.segmentModifiedChanged.bind(this) ) ;
     }
 
@@ -52,7 +52,7 @@ class SegmentMainButtons extends React.Component{
         MateCat.db.removeListener('segments', ['insert', 'update'], this.handleSegmentUpdate );
         MateCat.db.removeListener('segment_translation_issues', ['insert', 'update', 'delete'], this.updateButtonToShow );
 
-        var el = UI.Segment.findEl(this.props.sid);
+        var el = UI.getSegmentById(this.props.sid);
         el.off( 'modified', this.segmentModifiedChanged ) ;
     }
 
@@ -72,7 +72,7 @@ class SegmentMainButtons extends React.Component{
     }
 
     isSegmentModified() {
-        var el = UI.Segment.findEl(this.props.sid);
+        var el = UI.getSegmentById(this.props.sid);
         var isModified = el.data('modified');
         return isModified === true ;
     }
