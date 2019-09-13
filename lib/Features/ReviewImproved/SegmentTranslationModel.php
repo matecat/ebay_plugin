@@ -13,12 +13,15 @@ use LQA\ChunkReviewDao;
 
 class SegmentTranslationModel extends ReviewExtended\SegmentTranslationModel {
 
+    /**
+     * @throws \Exception
+     */
     public function recountPenaltyPoints() {
-        $penaltyPoints                      = ChunkReviewDao::getPenaltyPointsForChunk( $this->chunk );
-        $this->chunk_review->penalty_points = $penaltyPoints;
+        $penaltyPoints                      = ChunkReviewDao::getPenaltyPointsForChunk( $this->_chunk );
+        $this->_chunkReviews[0]->penalty_points = $penaltyPoints;
 
-        $chunk_review_model = new ChunkReviewModel( $this->chunk_review );
-        $chunk_review_model->updatePassFailResult();
+        $chunk_review_model = new ChunkReviewModel( $this->_chunkReviews[0] );
+        $chunk_review_model->updatePassFailResult( $this->_project );
     }
 
 }

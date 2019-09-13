@@ -15,17 +15,20 @@ class ChunkReviewModel extends \Features\ReviewExtended\ChunkReviewModel {
     /**
      * This method invokes the recount of reviewed_words_count and
      * penalty_points for the chunk and updates the passfail result.
+     *
+     * @param \Projects_ProjectStruct $project
+     *
+     * @throws \Exception
      */
-    public function recountAndUpdatePassFailResult() {
-        $chunk = $this->chunk_review->getChunk();
+    public function recountAndUpdatePassFailResult(  \Projects_ProjectStruct $project  ) {
 
         $this->chunk_review->penalty_points =
-                ChunkReviewDao::getPenaltyPointsForChunk( $chunk );
+                ChunkReviewDao::getPenaltyPointsForChunk( $this->chunk );
 
         $this->chunk_review->reviewed_words_count =
-                ChunkReviewDao::getReviewedWordsCountForChunk( $chunk );
+                ChunkReviewDao::getReviewedWordsCountForChunk( $this->chunk );
 
-        $this->updatePassFailResult();
+        $this->updatePassFailResult( $project );
     }
 
 }
