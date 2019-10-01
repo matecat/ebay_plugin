@@ -1,22 +1,24 @@
 <div id="additional-input-params" metal:define-macro="additional_input_params">
-    <div class="cl"></div>
+    <div class="translation-row">
+        <div class="translation-options">
+            <!-- <div class="cl"></div>-->
+            <div class="translate-box">
+                <h2>Project Type</h2>
+                <select name="project_type" id="ebay_project_type">
+                    <option value="HT">Human Translation</option>
+                    <option value="MT">Machine Translation</option>
+                </select>
+            </div>
 
-    <div class="translate-box">
-        <h2>Project Type</h2>
-        <select name="project_type" id="ebay_project_type">
-            <option value="HT">Human Translation</option>
-            <option value="MT">Machine Translation</option>
-        </select>
+            <div class="translate-box">
+                <h2>Vendor ID</h2>
+                <input name="vendor_id" type="text" id="ebay_vendor_id" class="upload-input" autofocus="autofocus" />
+            </div>
+
+            <div class="translate-box">
+                <h2>Due date</h2>
+                <input readonly="readonly" name="due_date" type="text" id="ebay_due_date" class="upload-input" autofocus="autofocus" />
+            </div>
+        </div>
     </div>
-
-    <div class="translate-box">
-        <h2>Vendor ID</h2>
-        <input name="vendor_id" type="text" id="ebay_vendor_id" class="upload-input" autofocus="autofocus" />
-    </div>
-
-    <div class="translate-box">
-        <h2>Due date</h2>
-        <input readonly="readonly" name="due_date" type="text" id="ebay_due_date" class="upload-input" autofocus="autofocus" />
-    </div>
-
 </div>
