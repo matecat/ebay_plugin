@@ -1,4 +1,5 @@
 let ReviewIssuesContainer = require('./ReviewIssuesContainer').default;
+import TagsUtils from "../../"
 class ReviewTranslationVersion extends React.Component {
 
 
@@ -25,7 +26,7 @@ class ReviewTranslationVersion extends React.Component {
     }
 
     translationMarkup () {
-        return { __html : UI.decodePlaceholdersToText( this.props.translation ) };
+        return { __html : TagUtils.decodePlaceholdersToText( this.props.translation ) };
     }
 
     toggleTrackChanges (e) {

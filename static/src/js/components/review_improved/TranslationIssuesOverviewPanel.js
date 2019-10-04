@@ -42,7 +42,7 @@ class TranslationIssuesOverviewPanel extends React.Component {
     originalTarget () {
         let segment = MateCat.db.segments.by('sid', this.props.sid);
         let original_target = this.getOriginalTarget( segment );
-        return { __html : UI.decodePlaceholdersToText( original_target ) };
+        return { __html : TagUtils.decodePlaceholdersToText( original_target ) };
     }
 
     getTrackChangesForCurrentVersion () {
