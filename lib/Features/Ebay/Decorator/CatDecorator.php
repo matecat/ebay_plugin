@@ -58,6 +58,8 @@ class CatDecorator extends \AbstractDecorator {
                 "{$this->controller->getChunk()->id}/" .
                 "{$this->controller->getChunk()->password}";
 
+        $this->assignCatDecorator();
+
 
     }
 
