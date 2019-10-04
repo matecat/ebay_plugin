@@ -1,5 +1,4 @@
 let ReviewIssuesContainer = require('./ReviewIssuesContainer').default;
-import TagsUtils from "../../"
 class ReviewTranslationVersion extends React.Component {
 
 
