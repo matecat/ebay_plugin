@@ -61,4 +61,12 @@ class CatDecorator extends \AbstractDecorator {
 
     }
 
+    protected function decorateForTranslate(){
+        $this->template->footer_show_editlog_link = true;
+    }
+
+    protected function decorateForRevision() {
+        $this->template->footer_show_editlog_link = true;
+    }
+
 }
