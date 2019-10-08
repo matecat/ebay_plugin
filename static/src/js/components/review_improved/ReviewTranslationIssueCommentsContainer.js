@@ -96,7 +96,7 @@ class ReviewTranslationIssueCommentsContainer extends React.Component{
 
     }
     handleFail() {
-        genericErrorAlertMessage() ;
+        CommonUtils.genericErrorAlertMessage() ;
         this.setState({ sendLabel : 'Send', sendDisabled : false });
     }
 

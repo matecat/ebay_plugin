@@ -82,7 +82,7 @@ if ( ReviewImproved.enabled() && config.isReview ) {
         var container = $(e.target).closest('.errorTaggingArea') ;
 
         if ( textSelectedInsideSelectionArea(selection, container ) )  {
-            var selection = getSelectionData( selection, container ) ;
+            var selection = CursorUtils.getSelectionData( selection, container ) ;
             SegmentActions.openIssuesPanel({ sid: segmentId,  selection : selection }, true);
         }
     });

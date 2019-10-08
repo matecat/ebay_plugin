@@ -50,12 +50,16 @@ class TranslationIssuesOverviewPanel extends React.Component {
         if ( segment.version_number != '0' ) {
             // no track changes possibile for first version
             let previous = this.findPreviousVersion( segment.version_number );
-            return trackChangesHTML(
+            return TextUtils.trackChangesHTML(
                 UI.clenaupTextFromPleaceholders( previous.translation ),
                 UI.clenaupTextFromPleaceholders(
-                    window.cleanupSplitMarker( segment.translation )
+                    this.cleanupSplitMarker( segment.translation )
                 ));
         }
+    }
+
+    cleanupSplitMarker( string ) {
+        return string.split( UI.splittedTranslationPlaceholder ).join();
     }
 
     findPreviousVersion ( version_number ) {
@@ -73,7 +77,7 @@ class TranslationIssuesOverviewPanel extends React.Component {
     getTrackChangesForOldVersion (version) {
         if ( version.version_number != "0" ) {
             let previous = this.findPreviousVersion( version.version_number );
-            return trackChangesHTML(
+            return TextUtils.trackChangesHTML(
                 UI.clenaupTextFromPleaceholders( previous.translation ),
                 UI.clenaupTextFromPleaceholders( version.translation )
             );
@@ -104,7 +108,7 @@ class TranslationIssuesOverviewPanel extends React.Component {
             key={'version-0'}
             versionNumber={segment.version_number}
             isCurrent={true}
-            translation={window.cleanupSplitMarker( segment.translation ) }
+            translation={this.cleanupSplitMarker( segment.translation ) }
             reviewType={this.props.reviewType}/>
 
         return [currentVersion].concat(previousVersions);
