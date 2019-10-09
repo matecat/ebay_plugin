@@ -19,18 +19,6 @@ if ( ReviewImproved.enabled() && config.isReview ) {
         alertNotTranslatedMessage : "This segment is not translated yet.<br /> Only translated or post-edited segments can be revised. " +
          " <br />If needed, you can force the status by clicking on the coloured bar on the right of the segment ",
 
-        setShortcuts: function () {
-            originalSetShortcuts.apply(this);
-
-            UI.shortcuts.cattol.events.reject = {
-                "label" : "Reject translation",
-                    "equivalent": "click on Rejected",
-                    "keystrokes" : {
-                    "standard": "ctrl+shift+down",
-                        "mac": "meta+shift+down"
-                }
-            };
-        },
         /**
          * translationIsToSave
          *
@@ -101,8 +89,8 @@ if ( ReviewImproved.enabled() && config.isReview ) {
 
             originalBindShortcuts();
 
-            $('body').on('keydown.shortcuts', null, UI.shortcuts.cattol.events.reject.keystrokes.standard, rejectKeyDownEvent ) ;
-            $('body').on('keydown.shortcuts', null, UI.shortcuts.cattol.events.reject.keystrokes.mac, rejectKeyDownEvent ) ;
+            $('body').on('keydown.shortcuts', null, 'ctrl+shift+down', rejectKeyDownEvent ) ;
+            $('body').on('keydown.shortcuts', null, 'meta+shift+down', rejectKeyDownEvent ) ;
         },
 
         unlockIceSegment: function (elem) {
