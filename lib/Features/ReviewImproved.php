@@ -65,4 +65,10 @@ class ReviewImproved extends AbstractRevisionFeature {
         $controller->respond();
     }
 
+    public function filterFeaturesMerged( $features ) {
+        unset( $features[ ReviewExtended::FEATURE_CODE ] );
+        unset( $features[ SecondPassReview::FEATURE_CODE ] );
+        return $features;
+    }
+
 }

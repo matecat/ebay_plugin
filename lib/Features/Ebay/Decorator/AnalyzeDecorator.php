@@ -13,6 +13,7 @@ use Analysis\Status;
 use Analysis_AnalysisModel;
 use Bootstrap;
 use DateTime;
+use Exception;
 use Features\Dqf;
 use Features\Ebay;
 use Features\Ebay\Utils\Routes;
@@ -169,13 +170,17 @@ class AnalyzeDecorator extends AbstractModelViewDecorator {
 
         if ( AbstractFilesStorage::isOnS3() ) {
 
-            $filePath = tempnam( '/tmp', 'ebay_' );
-            /** @var $s3Client Client */
-            $s3Client            = S3FilesStorage::getStaticS3Client();
-            $params[ 'bucket' ]  = \INIT::$AWS_STORAGE_BASE_BUCKET;
-            $params[ 'key' ]     = $zip_path;
-            $params[ 'save_as' ] = $filePath;
-            $s3Client->downloadItem( $params );
+            try {
+                $filePath = tempnam( '/tmp', 'ebay_' );
+                /** @var $s3Client Client */
+                $s3Client            = S3FilesStorage::getStaticS3Client();
+                $params[ 'bucket' ]  = \INIT::$AWS_STORAGE_BASE_BUCKET;
+                $params[ 'key' ]     = $zip_path;
+                $params[ 'save_as' ] = $filePath;
+                $s3Client->downloadItem( $params );
+            } catch ( Exception $ignored ) {
+            }
+
             $zip_path = $filePath;
 
         }
