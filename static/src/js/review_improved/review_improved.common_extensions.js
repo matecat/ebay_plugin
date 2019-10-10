@@ -1,3 +1,4 @@
+
 if ( ReviewImproved.enabled() )
     (function($, ReviewImproved) {
 
@@ -51,7 +52,7 @@ if ( ReviewImproved.enabled() )
         openIssuesPanel : function(data, openSegment) {
             $('body').addClass('review-improved-opened');
             UI.hackIntercomButton( true );
-            SearchUtils.closeSearch();
+            CatToolActions.closeSearch();
 
             $('body').addClass('side-tools-opened review-side-panel-opened');
             window.dispatchEvent(new Event('resize'));
