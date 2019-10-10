@@ -59,7 +59,7 @@ if ( ReviewImproved.enabled() )
             if (data && openSegment) {
                 SegmentActions.openSegment(data.sid);
                 window.setTimeout( function ( data ) {
-                    UI.scrollSegment( data.sid );
+                    SegmentActions.scrollToSegment( data.sid );
                 }, 500, data );
             }
             return true;
@@ -80,7 +80,7 @@ if ( ReviewImproved.enabled() )
             $('body').removeClass('side-tools-opened review-side-panel-opened review-improved-opened');
             if ( UI.currentSegmentId ) {
                 setTimeout( function() {
-                    UI.scrollSegment( UI.currentSegmentId );
+                    SegmentActions.scrollToSegment( UI.currentSegmentId );
                 }, 100 );
             }
             window.dispatchEvent(new Event('resize'));

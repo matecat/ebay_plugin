@@ -23,7 +23,7 @@ if ( ReviewImproved.enabled() && config.isReview ) {
 
         if ( ! section.hasClass('opened') ) {
             SegmentActions.openSegment(id);
-            UI.scrollSegment( id );
+            SegmentActions.scrollToSegment( id );
         }
     });
 

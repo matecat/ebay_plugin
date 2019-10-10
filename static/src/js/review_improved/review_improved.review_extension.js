@@ -66,13 +66,6 @@ if ( ReviewImproved.enabled() && config.isReview ) {
         shouldSegmentAutoPropagate : function() {
             return false;
         },
-
-        getSegmentTarget : function( seg ) {
-            var segment = db.segments.by('sid', UI.getSegmentId( seg ) );
-            var translation =  segment.translation ;
-
-            return translation ;
-        },
         rejectAndGoToNext : function() {
             UI.setTranslation({
                 id_segment: UI.currentSegmentId,
