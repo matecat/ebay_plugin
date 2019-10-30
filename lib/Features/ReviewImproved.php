@@ -36,7 +36,7 @@ class ReviewImproved extends AbstractRevisionFeature {
 
         $chunksStructArray = \Jobs_JobDao::getById( $id_job, 0, new Chunks_ChunkStruct() );
 
-        $reviews = $this->createQaChunkReviewRecord( $chunksStructArray, $project, [
+        $reviews = $this->createQaChunkReviewRecord( $chunksStructArray, $project->id, [
                 'first_record_password' => $first_password
         ] );
 
