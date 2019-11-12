@@ -2,9 +2,11 @@
 
 namespace Features ;
 
-use Features\ReviewImproved\ChunkReviewModel;
+use Chunks_ChunkStruct;
 use Features\ReviewImproved\Controller\QualityReportController;
 use LQA\ChunkReviewDao;
+use Projects_ProjectDao;
+use RevisionFactory;
 
 class ReviewImproved extends AbstractRevisionFeature {
     const FEATURE_CODE = 'review_improved' ;
@@ -18,25 +20,32 @@ class ReviewImproved extends AbstractRevisionFeature {
      *
      * @param \ArrayObject $projectStructure
      *
-     * @throws \Exceptions\ValidationError
+     * @throws \Exception
      */
     public function postJobSplitted( \ArrayObject $projectStructure ) {
 
-        $id_job = $projectStructure['job_to_split'];
-        $old_reviews = ChunkReviewDao::findByIdJob( $id_job );
-        $first_password = $old_reviews[0]->review_password ;
+        $id_job         = $projectStructure[ 'job_to_split' ];
+        $old_reviews    = ChunkReviewDao::findByIdJob( $id_job );
+        $first_password = $old_reviews[ 0 ]->review_password;
+
+        $project = Projects_ProjectDao::findById( $projectStructure[ 'id_project' ], 86400 );
+
+        $revisionFactory = RevisionFactory::initFromProject( $project );
 
         ChunkReviewDao::deleteByJobId( $id_job );
 
-        $this->createQaChunkReviewRecord( $id_job, $projectStructure[ 'id_project' ], [
+        $chunksStructArray = \Jobs_JobDao::getById( $id_job, 0, new Chunks_ChunkStruct() );
+
+        $reviews = $this->createQaChunkReviewRecords( $chunksStructArray, $project, [
                 'first_record_password' => $first_password
         ] );
 
-        $reviews = ChunkReviewDao::findByIdJob( $id_job );
-        foreach( $reviews as $review ) {
-            $model = new ChunkReviewModel($review);
-            $model->recountAndUpdatePassFailResult();
+
+        foreach ( $reviews as $review ) {
+            $model = $revisionFactory->getChunkReviewModel( $review );
+            $model->recountAndUpdatePassFailResult( $project );
         }
+
     }
 
     /**
@@ -54,6 +63,12 @@ class ReviewImproved extends AbstractRevisionFeature {
         $template_path = dirname(__FILE__) . '/ReviewImproved/View/Html/quality_report.html' ;
         $controller->setView( $template_path );
         $controller->respond();
+    }
+
+    public function filterFeaturesMerged( $features ) {
+        unset( $features[ ReviewExtended::FEATURE_CODE ] );
+        unset( $features[ SecondPassReview::FEATURE_CODE ] );
+        return $features;
     }
 
 }

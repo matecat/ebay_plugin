@@ -18,6 +18,7 @@ class TranslationIssueModel extends \Features\ReviewExtended\TranslationIssueMod
      * Penalty points are not subtracted if deletion is coming from a review and the issue is rebutted, because in that
      * case we could end up with negative sum of penalty points
      *
+     * @throws \Exception
      */
 
     public function delete() {
@@ -25,7 +26,7 @@ class TranslationIssueModel extends \Features\ReviewExtended\TranslationIssueMod
 
         if ( is_null( $this->issue->rebutted_at ) ) {
             $chunk_review_model = new ChunkReviewModel( $this->chunk_review );
-            $chunk_review_model->subtractPenaltyPoints( $this->issue->penalty_points );
+            $chunk_review_model->subtractPenaltyPoints( $this->issue->penalty_points, $this->project );
         }
     }
 
