@@ -51,8 +51,8 @@ class TranslationIssuesOverviewPanel extends React.Component {
             // no track changes possibile for first version
             let previous = this.findPreviousVersion( segment.version_number );
             return TextUtils.trackChangesHTML(
-                UI.clenaupTextFromPleaceholders( previous.translation ),
-                UI.clenaupTextFromPleaceholders(
+                TextUtils.clenaupTextFromPleaceholders( previous.translation ),
+                TextUtils.clenaupTextFromPleaceholders(
                     this.cleanupSplitMarker( segment.translation )
                 ));
         }
@@ -78,8 +78,8 @@ class TranslationIssuesOverviewPanel extends React.Component {
         if ( version.version_number != "0" ) {
             let previous = this.findPreviousVersion( version.version_number );
             return TextUtils.trackChangesHTML(
-                UI.clenaupTextFromPleaceholders( previous.translation ),
-                UI.clenaupTextFromPleaceholders( version.translation )
+                TextUtils.clenaupTextFromPleaceholders( previous.translation ),
+                TextUtils.clenaupTextFromPleaceholders( version.translation )
             );
         }
     }
