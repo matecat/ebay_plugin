@@ -20,6 +20,7 @@ use Features\Ebay\Utils\Routes as Routes;
 use Features\Ebay\Utils\SkippedSegments;
 use Features\ProjectCompletion\CompletionEventStruct;
 use Features\ReviewExtended\Model\QualityReportModel;
+use Features\TranslationVersions\Model\TranslationVersionDao;
 use FilesStorage\AbstractFilesStorage;
 use Klein\Klein;
 use Projects_ProjectStruct;
@@ -215,7 +216,7 @@ class Ebay extends BaseFeature {
         if ( intval( $this->old_translation[ 'version_number' ] ) == 0 ) {
             $original = $this->old_translation[ 'translation' ];
         } else {
-            $version0 = \Translations_TranslationVersionDao::getVersionNumberForTranslation(
+            $version0 = TranslationVersionDao::getVersionNumberForTranslation(
                     $this->translation[ 'id_job' ], $this->translation[ 'id_segment' ], 0
             );
             $original = $version0->translation;
