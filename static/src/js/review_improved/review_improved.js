@@ -108,7 +108,7 @@ if ( ReviewImproved.enabled() && config.isReview ) {
     $.extend(ReviewImproved, {
         submitIssue : function(sid, data_array) {
             var path  = sprintf('/api/v2/jobs/%s/%s/segments/%s/translation-issues',
-                  config.id_job, config.password, sid);
+                  config.id_job, config.review_password, sid);
 
             var deferreds = _.map( data_array, function( data ) {
                 return $.post( path, data )

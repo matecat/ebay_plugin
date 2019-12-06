@@ -13,21 +13,20 @@ namespace Features\ReviewImproved\Controller\API\V2\Validators;
 use API\V2\Exceptions\ValidationError;
 use Exception;
 use Features\TranslationVersions\Model\SegmentTranslationEventDao;
-use Utils;
 
-class SegmentTranslationIssue extends \API\V2\Validators\SegmentTranslationIssue {
+class SegmentTranslationIssueValidator extends \API\V2\Validators\SegmentTranslationIssueValidator {
 
     /**
      *
      * @throws Exception
      * @throws ValidationError
      */
-    protected function __ensureSegmentRevisionIsCompatibileWithIssueRevisionNumber() {
+    protected function __ensureSegmentRevisionIsCompatibleWithIssueRevisionNumber() {
 
         $latestSegmentEvent = ( new SegmentTranslationEventDao() )->getLatestEventForSegment( $this->chunk_review->id_job, $this->segment->id );
 
-        if ( !$latestSegmentEvent && !$this->translation->isICE() ) {
-            throw new Exception( 'Unable to find the current state of this segment. Please report this issue to support.' );
+        if ( !$latestSegmentEvent && !$this->translation->isICE() && !$this->translation->isPreTranslated() ) {
+            throw new ValidationError( 'Unable to find the current state of this segment. Please report this issue to support.' );
         }
 
     }
