@@ -23,7 +23,7 @@ class SegmentTranslationIssueValidator extends \API\V2\Validators\SegmentTransla
      */
     protected function __ensureSegmentRevisionIsCompatibleWithIssueRevisionNumber() {
 
-        $latestSegmentEvent = ( new SegmentTranslationEventDao() )->getLatestEventForSegment( $this->chunk_review->id_job, $this->segment->id );
+        $latestSegmentEvent = ( new SegmentTranslationEventDao() )->getLatestEventForSegment( $this->chunk_review->id_job, $this->translation->id_segment );
 
         if ( !$latestSegmentEvent && !$this->translation->isICE() && !$this->translation->isPreTranslated() ) {
             throw new ValidationError( 'Unable to find the current state of this segment. Please report this issue to support.' );
