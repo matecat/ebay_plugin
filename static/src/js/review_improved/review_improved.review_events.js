@@ -47,7 +47,7 @@ if ( ReviewImproved.enabled() && config.isReview ) {
     });
 
     $(document).on('click', 'a.approved', function(e) {
-        UI.changeStatus( this , 'approved', 0);
+        UI.changeStatus( this , 'approved');
         var goToNextNotApproved = ($(e.currentTarget).hasClass('approved')) ? false : true;
         if (goToNextNotApproved) {
             UI.openNextTranslated();
