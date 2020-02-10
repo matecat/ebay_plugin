@@ -14,7 +14,7 @@ if ( ReviewImproved.enabled() && !config.isReview)
     var clickOnRebutted = function(sid) {
         var el = UI.getSegmentById(sid);
         SegmentActions.removeClassToSegment(sid, 'modified');
-        UI.changeStatus(el, 'rebutted', true);
+        UI.changeStatus(el, 'rebutted');
         UI.gotoNextSegment();
     };
 
@@ -26,7 +26,7 @@ if ( ReviewImproved.enabled() && !config.isReview)
 
         SegmentActions.removeClassToSegment(sid, 'modified');
         el.data('modified',  false);
-        UI.changeStatus(el, 'fixed', true);
+        UI.changeStatus(el, 'fixed');
         UI.gotoNextSegment(); // NOT ideal behaviour, would be better to have a callback chain of sort.
 
     };
