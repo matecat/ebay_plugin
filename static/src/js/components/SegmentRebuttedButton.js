@@ -11,19 +11,12 @@ class SegmentRebuttedButton extends React.Component{
         ReviewImproved.clickOnRebutted(this.props.sid);
     }
 
-    componentDidMount() {
-    }
-
-    componentWillUnmount() {
-    }
-
     render() {
         var cmd = ((UI.isMac) ? 'CMD' : 'CTRL');
 
         return <li>
             <a className="button button-rebutted status-rebutted"
                onClick={this.handleClick.bind(this)}
-               href="javascript:;"
                disabled={!this.state.disabled}
                draggable="false"
             >

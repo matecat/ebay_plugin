@@ -19,85 +19,6 @@ if ( ReviewImproved.enabled() && config.isReview ) {
         alertNotTranslatedMessage : "This segment is not translated yet.<br /> Only translated or post-edited segments can be revised. " +
          " <br />If needed, you can force the status by clicking on the coloured bar on the right of the segment ",
 
-        setShortcuts: function () {
-            originalSetShortcuts.apply(this);
-
-            UI.shortcuts.cattol.events.reject = {
-                "label" : "Reject translation",
-                    "equivalent": "click on Rejected",
-                    "keystrokes" : {
-                    "standard": "ctrl+shift+down",
-                        "mac": "meta+shift+down"
-                }
-            };
-        },
-
-        /**
-         * Search for the next translated segment to propose for revision.
-         * This function searches in the current UI first, then falls back
-         * to invoke the server and eventually reload the page to the new
-         * URL.
-         */
-        openNextTranslated: function (sid) {
-            sid = sid || UI.currentSegmentId;
-            var el = $('#segment-' + sid);
-
-            var translatedList = [];
-            var approvedList = [];
-            var clickableSelector = UI.targetContainerSelector();
-
-            var clickSegmentIfFound =  function() {
-                if( !$(this).is(UI.currentSegment) ) {
-                translatedList = $(this);
-                translatedList.first().find(UI.targetContainerSelector()).click();
-                return false;
-                }
-            };
-
-            // find in next segments in the current file
-            if ( el.nextAll('section.status-translated, section.status-approved').length ) {
-                translatedList = el.nextAll('.status-translated');
-                approvedList   = el.nextAll('.status-approved');
-                if ( translatedList.length ) {
-                    translatedList.first().find( clickableSelector ).click();
-                } else {
-                    approvedList.first().find( clickableSelector ).click();
-                }
-
-            } else if(el.parents('article').nextAll('section.status-translated, section.status-approved').length) {
-                // find in next segments in the next files
-                file = el.parents('article');
-                file.nextAll('section.status-translated, section.status-approved').each( clickSegmentIfFound );
-
-                // else find from the beginning of the currently loaded segments in all files
-            } else if ($('section.status-translated, section.status-approved').length) {
-                // else find from the beginning of the currently loaded segments in all files
-                $('section.status-translated, section.status-approved').each( clickSegmentIfFound );
-
-            } else { // find in not loaded segments
-                // Go to the next segment saved before
-                var callback = function() {
-                    $(window).off('modalClosed');
-                    //Check if the next is inside the view, if not render the file
-                    var next = UI.Segment.findEl(UI.nextUntranslatedSegmentIdByServer);
-                    if (next.length > 0) {
-                        UI.gotoSegment(UI.nextUntranslatedSegmentIdByServer);
-                    } else {
-                        UI.renderAfterConfirm(UI.nextUntranslatedSegmentIdByServer);
-                    }
-                };
-                // If the modal is open wait the close event
-                if( $(".modal[data-type='confirm']").length ) {
-                    $(window).on('modalClosed', function(e) {
-                        callback();
-                    });
-                } else {
-                    callback();
-                }
-
-            }
-
-        },
         /**
          * translationIsToSave
          *
@@ -129,14 +50,11 @@ if ( ReviewImproved.enabled() && config.isReview ) {
                 UI.reloadQualityReport();
             });
         },
-        createButtons: function(segment) {
-            ReviewImproved.renderButtons();
-            UI.currentSegment.trigger('buttonsCreation');
-
-        },
-        copySuggestionInEditarea : function() {
-            return ;
-        },
+        // createButtons: function(segment) {
+        //     ReviewImproved.renderButtons();
+        //     UI.currentSegment.trigger('buttonsCreation');
+        //
+        // },
         targetContainerSelector : function() {
             return '.errorTaggingArea';
         },
@@ -147,13 +65,6 @@ if ( ReviewImproved.enabled() && config.isReview ) {
          */
         shouldSegmentAutoPropagate : function() {
             return false;
-        },
-
-        getSegmentTarget : function( seg ) {
-            var segment = db.segments.by('sid', UI.getSegmentId( seg ) );
-            var translation =  segment.translation ;
-
-            return translation ;
         },
         rejectAndGoToNext : function() {
             UI.setTranslation({
@@ -171,8 +82,8 @@ if ( ReviewImproved.enabled() && config.isReview ) {
 
             originalBindShortcuts();
 
-            $('body').on('keydown.shortcuts', null, UI.shortcuts.cattol.events.reject.keystrokes.standard, rejectKeyDownEvent ) ;
-            $('body').on('keydown.shortcuts', null, UI.shortcuts.cattol.events.reject.keystrokes.mac, rejectKeyDownEvent ) ;
+            $('body').on('keydown.shortcuts', null, 'ctrl+shift+down', rejectKeyDownEvent ) ;
+            $('body').on('keydown.shortcuts', null, 'meta+shift+down', rejectKeyDownEvent ) ;
         },
 
         unlockIceSegment: function (elem) {

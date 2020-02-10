@@ -6,9 +6,7 @@
     <meta name="description" content="MateCat allows you to get more matches than any other CAT tool."/>
     <meta name="viewport" content="width=device-width"/>
 
-    <link rel="stylesheet" href="${basepath}public/css/build/common.css?build=${build_number}" type="text/css"/>
-    <link rel="stylesheet" href="${basepath}public/css/analyze_old.css?build=${build_number}"/>
-    <link rel="stylesheet" href="${basepath}public/css/libs/jquery.powertip.css?build=${build_number}"/>
+
 
 
     <script type="text/javascript">
@@ -27,6 +25,7 @@
     </script>
 
     <style type="text/css">
+
         body#analyze .loadingbar {
             position: relative;
             margin-top: 10px;
@@ -122,7 +121,7 @@
         }
 
         td.empty.undoCompleteBtnContainer.completed {
-            width: 313px !important;
+            width: 335px !important;
             display: inline-block;
         }
 
@@ -183,6 +182,11 @@
 
     </style>
 
+    <link rel="stylesheet" href="${basepath}public/css/build/common.css?build=${build_number}" type="text/css"/>
+    <link rel="stylesheet" href="${basepath}public/css/analyze_old.css?build=${build_number}"/>
+    <link href="${basepath}public/css/build/analyze-build.css?build=${build_number}" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="${basepath}public/css/libs/jquery.powertip.css?build=${build_number}"/>
+
     <script type="text/javascript" src="${basepath}public/js/build/libs.js?build=${build_number}"></script>
 
     <script type="text/javascript" src="${basepath}public/js/forcedelivery.js"></script>
@@ -201,11 +205,11 @@
 <body id="analyze">
 
 <header>
-    <div class="wrapper">
-        <a href="${basepath}" class="logo"></a>
-        <div metal:use-macro="${php: INIT::$TEMPLATE_ROOT}/common.html/login_includes" />
+<!--    <div class="wrapper">-->
+<!--        <a href="${basepath}" class="logo"></a>-->
+<!--        <div metal:use-macro="${php: INIT::$TEMPLATE_ROOT}/common.html/login_includes" />-->
 
-    </div>
+<!--    </div>-->
 </header>
 
 

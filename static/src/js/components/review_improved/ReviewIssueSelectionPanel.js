@@ -75,7 +75,7 @@ class ReviewIssueSelectionPanel extends React.Component{
     }
 
     handleFail() {
-        genericErrorAlertMessage() ;
+        CommonUtils.genericErrorAlertMessage() ;
         this.props.handleFail();
         this.setState({ submitDone : false, submitDisabled : false });
     }

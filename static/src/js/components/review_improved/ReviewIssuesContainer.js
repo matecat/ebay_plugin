@@ -7,7 +7,6 @@ class ReviewIssuesContainer extends React.Component {
             issues : this.getIssuesFromDb(this.props.sid,
                 this.props.versionNumber)
         };
-
     }
 
     getIssuesFromDb ( sid, versionNumber ) {
@@ -17,9 +16,15 @@ class ReviewIssuesContainer extends React.Component {
         });
     }
 
-    componentWillReceiveProps ( nextProps ) {
-        var issues = this.getIssuesFromDb( nextProps.sid, nextProps.versionNumber) ;
-        this.setState({ issues: issues });
+    static getDerivedStateFromProps(props, state) {
+        let getIssuesFromDb = function ( sid, versionNumber ) {
+            return db.segment_translation_issues.findObjects({
+                'id_segment' : parseInt(sid),
+                'translation_version' : '' + versionNumber
+            });
+        };
+        var issues = getIssuesFromDb( props.sid, props.versionNumber) ;
+        return { issues: issues };
     }
 
     componentDidMount () {

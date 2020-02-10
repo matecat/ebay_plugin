@@ -1,3 +1,4 @@
+
 if ( ReviewImproved.enabled() )
     (function($, ReviewImproved) {
 
@@ -18,10 +19,6 @@ if ( ReviewImproved.enabled() )
                     isReview: config.isReview
                 } ),
                 UI.issuesMountPoint );
-        },
-
-        unmountPanelComponent : function() {
-            ReactDOM.unmountComponentAtNode( UI.issuesMountPoint );
         },
         /**
          * getStatusForAutoSave
@@ -44,46 +41,46 @@ if ( ReviewImproved.enabled() )
             return status;
         },
 
-        getSegmentVersionsIssuesHandler: function (event) {
+        getSegmentVersionsIssuesHandler: function (e, data) {
             // TODO Uniform behavior of ReviewExtended and ReviewImproved
-            var sid = event.segment.absId;
-            var fid = UI.getSegmentFileId(event.segment.el);
-            var versions = [];
-            SegmentActions.addTranslationIssuesToSegment(fid, sid, versions);
+            var segment = SegmentStore.getSegmentByIdToJS(data.segmentId);
+            SegmentActions.addTranslationIssuesToSegment(segment.id_file, segment.original_sid,  []);
         },
         submitComment : function(id_segment, id_issue, data) {
             return ReviewImproved.submitComment(id_segment, id_issue, data)
         },
         openIssuesPanel : function(data, openSegment) {
-            var segment = (data)? UI.Segment.findEl( data.sid ): data;
             $('body').addClass('review-improved-opened');
-            hackIntercomButton( true );
-            SearchUtils.closeSearch();
+            UI.hackIntercomButton( true );
+            CatToolActions.closeSearch();
 
             $('body').addClass('side-tools-opened review-side-panel-opened');
             window.dispatchEvent(new Event('resize'));
             if (data && openSegment) {
-                segment.find( UI.targetContainerSelector() ).click();
+                SegmentActions.openSegment(data.sid);
                 window.setTimeout( function ( data ) {
-                    var el = UI.Segment.find( data.sid ).el;
-
-                    if ( UI.currentSegmentId != data.sid ) {
-                        UI.focusSegment( el );
-                    }
-
-                    UI.scrollSegment( el );
+                    SegmentActions.scrollToSegment( data.sid );
                 }, 500, data );
             }
+            return true;
         },
-
+        hackIntercomButton(on ) {
+            var button = $( document ).find( '.support-tip-button' );
+            if ( on ) {
+                button.data( 'mbc-zindex', button.css( 'z-index' ) );
+                button.css( 'z-index', -1 );
+            } else {
+                button.css( 'z-index', button.data( 'mbc-zindex' ) );
+            }
+        },
         closeIssuesPanel : function() {
 
-            hackIntercomButton( false );
+            UI.hackIntercomButton( false );
             SegmentActions.closeIssuesPanel();
             $('body').removeClass('side-tools-opened review-side-panel-opened review-improved-opened');
-            if ( UI.currentSegment ) {
+            if ( UI.currentSegmentId ) {
                 setTimeout( function() {
-                    UI.scrollSegment( UI.currentSegment );
+                    SegmentActions.scrollToSegment( UI.currentSegmentId );
                 }, 100 );
             }
             window.dispatchEvent(new Event('resize'));
@@ -126,7 +123,7 @@ if ( ReviewImproved.enabled() )
             APP.doRequest({
                 data: data,
                 error: function() {
-                    UI.failedConnection( data, 'setRevision' );
+                    OfflineUtils.failedConnection( data, 'setRevision' );
                 },
                 success: function(d) {
                     window.quality_report_btn_component.setState({
@@ -147,23 +144,10 @@ if ( ReviewImproved.enabled() )
                 });
             }
         },
-
-        gotoSegment: function(id) {
-            if ( !this.segmentIsLoaded(id) && UI.parsedHash.splittedSegmentId ) {
-                id = UI.parsedHash.splittedSegmentId ;
-            }
-
-            if ( typeof id === 'undefined' ) {
-                console.debug( 'id is undefined', id);
-                return ;
-            }
-
-            if ( MBC.enabled() && MBC.wasAskedByCommentHash( id ) ) {
-                MBC.openSegmentComment( UI.Segment.findEl( id ) ) ;
-            } else {
-                SegmentActivator.activate(id);
-            }
-        },
+        showFixedAndRebuttedButtons ( status ) {
+            status = status.toLowerCase();
+            return status == 'rejected' || status == 'fixed' || status == 'rebutted' ;
+        }
     });
 
     $(document).ready(function() {

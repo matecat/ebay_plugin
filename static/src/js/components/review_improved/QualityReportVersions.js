@@ -48,10 +48,6 @@ class QualityReportVersions extends React.Component {
         }
     }
 
-    componentWillUnmount() {}
-
-    componentDidUpdate() {}
-
     render () {
         let versions = this.getVersionsHtml()
         return <div className="ui fluid selection dropdown " id="report-versions-select"

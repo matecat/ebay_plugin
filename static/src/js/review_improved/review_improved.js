@@ -140,13 +140,13 @@ if ( ReviewImproved.enabled() && config.isReview ) {
         }
     };
     SegmentActivator.registry.push(function( sid ) {
-        var segment = UI.Segment.find( sid );
+        var segment = UI.getSegmentById( sid );
         // TODO: refactor this, the click to activate a
         // segment is not a good way to handle.
         if ( config.isReview ) {
-            segment.el.find('.errorTaggingArea').click();
+            segment.find('.errorTaggingArea').click();
         } else {
-            segment.el.find('.targetarea').click();
+            segment.find('.targetarea').click();
         }
     });
 })();

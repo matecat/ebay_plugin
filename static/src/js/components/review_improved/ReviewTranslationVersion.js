@@ -10,8 +10,8 @@ class ReviewTranslationVersion extends React.Component {
 
     }
 
-    componentWillReceiveProps (nextProps) {
-        this.setState({ collapsed : !nextProps.isCurrent, trackChanges : false });
+    static getDerivedStateFromProps(props, state) {
+        return { collapsed : !props.isCurrent, trackChanges : false };
     }
 
     issueMouseEnter ( issue, event, reactid ) {
@@ -25,7 +25,7 @@ class ReviewTranslationVersion extends React.Component {
     }
 
     translationMarkup () {
-        return { __html : UI.decodePlaceholdersToText( this.props.translation ) };
+        return { __html : TagUtils.decodePlaceholdersToText( this.props.translation ) };
     }
 
     toggleTrackChanges (e) {
