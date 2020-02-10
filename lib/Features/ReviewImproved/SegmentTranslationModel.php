@@ -24,4 +24,8 @@ class SegmentTranslationModel extends ReviewExtended\SegmentTranslationModel {
         $chunk_review_model->updatePassFailResult( $this->_project );
     }
 
+    protected function _deleteIssues( $source_page ) {
+        usleep(1);
+    }
+
 }

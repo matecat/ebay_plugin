@@ -56,7 +56,7 @@ class AnalyzeController extends BaseKleinViewController {
 
         $decorator->decorate( $this->view );
 
-        $this->project->getFeatures()->run('decorateTemplate', $this->view, $this);
+        $this->project->getFeaturesSet()->run('decorateTemplate', $this->view, $this);
 
         $this->response->body( $this->view->execute() );
         $this->response->send();
