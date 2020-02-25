@@ -37,7 +37,6 @@ class CatDecorator extends \AbstractDecorator {
         $this->template->append('footer_js', Routes::staticBuild('js/ebay-core.js') );
         $this->template->append('footer_js', Routes::staticBuild('js/ebay-components.js') );
         $this->template->append('css_resources', Routes::staticBuild('css/review_improved.css') );
-//        $this->template->append('footer_js', Routes::staticSrc('js/ebay-cat.js') );
 
         $this->metadata = $this->controller->getChunk()->getProject()->getMetadataAsKeyValue();
         $this->statuses = new SegmentStatuses( $project ) ;
