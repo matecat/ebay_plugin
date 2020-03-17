@@ -3,6 +3,7 @@ if ( ReviewImproved.enabled() )
     (function($, ReviewImproved) {
 
     var prev_getStatusForAutoSave = UI.getStatusForAutoSave ;
+    var originalRegisterFooterTabs = UI.registerFooterTabs;
     /**
      * Split segment feature is not compatible with ReviewImproved.
      */
@@ -147,7 +148,11 @@ if ( ReviewImproved.enabled() )
         showFixedAndRebuttedButtons ( status ) {
             status = status.toLowerCase();
             return status == 'rejected' || status == 'fixed' || status == 'rebutted' ;
-        }
+        },
+        registerFooterTabs: function () {
+            originalRegisterFooterTabs.apply(this);
+            SegmentActions.registerTab('messages', true, true);
+        },
     });
 
     $(document).ready(function() {
