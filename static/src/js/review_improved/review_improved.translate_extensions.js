@@ -12,9 +12,9 @@ if ( ReviewImproved.enabled() && !config.isReview)
     var originalBindShortcuts = UI.bindShortcuts ;
 
     var clickOnRebutted = function(sid) {
-        var el = UI.getSegmentById(sid);
+        var segment = SegmentStore.getSegmentByIdToJS(sid);
         SegmentActions.removeClassToSegment(sid, 'modified');
-        UI.changeStatus(el, 'rebutted');
+        UI.changeStatus(segment, 'rebutted');
         UI.gotoNextSegment();
     };
 
@@ -23,10 +23,9 @@ if ( ReviewImproved.enabled() && !config.isReview)
         if ( el.find('.button-fixed').attr('disabled') == 'disabled' ) {
             return ;
         }
-
+        var segment = SegmentStore.getSegmentByIdToJS(sid);
         SegmentActions.removeClassToSegment(sid, 'modified');
-        el.data('modified',  false);
-        UI.changeStatus(el, 'fixed');
+        UI.changeStatus(segment, 'fixed');
         UI.gotoNextSegment(); // NOT ideal behaviour, would be better to have a callback chain of sort.
 
     };
