@@ -47,12 +47,13 @@ if ( ReviewImproved.enabled() && config.isReview ) {
     });
 
     $(document).on('click', 'a.approved', function(e) {
-        UI.changeStatus( this , 'approved');
+        var segment = SegmentStore.getCurrentSegment();
+        UI.changeStatus( segment , 'approved');
         var goToNextNotApproved = ($(e.currentTarget).hasClass('approved')) ? false : true;
         if (goToNextNotApproved) {
             UI.openNextTranslated();
         } else {
-            UI.gotoNextSegment(UI.currentSegmentId);
+            UI.gotoNextSegment(segment.sid);
         }
     });
 

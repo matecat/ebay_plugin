@@ -73,9 +73,9 @@ if ( ReviewImproved.enabled() && config.isReview ) {
                 caller: false,
                 byStatus: false,
                 propagate: false,
-            });
+            }, UI.gotoNextSegment);
 
-            UI.gotoNextSegment() ;
+
         },
 
         bindShortcuts : function() {
