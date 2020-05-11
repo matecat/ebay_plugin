@@ -109,7 +109,7 @@
             if ( currentScore == 0 ) {
                 button = <li className="right">
                     <a id={"segment-" + this.props.segment.sid + "-button-translated "}
-                       onClick={( event ) => this.clickOnApprovedButton( event )}
+                       onClick={( event ) => this.clickOnApprovedButton( event, false )}
                        data-segmentid={"segment-" + this.props.segment.sid}
                        className="approved"
                     >APPROVED</a>
