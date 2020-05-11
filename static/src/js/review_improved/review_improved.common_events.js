@@ -4,9 +4,9 @@ if ( ReviewImproved.enabled() ) {
 
     $(document).on('files:appended', function initReactComponents() {
 
-        loadDataPromise.done(function() {
-            SegmentActions.mountTranslationIssues();
-        });
+        // loadDataPromise.done(function() {
+        //     SegmentActions.mountTranslationIssues();
+        // });
     });
 
     var issuesPanelSideButtonEnabled = function( segment ) {

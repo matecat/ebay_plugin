@@ -133,18 +133,6 @@ if ( ReviewImproved.enabled() )
                 }
             });
         },
-        /**
-         *
-         * @param d Data response from the SetCurrentSegment request
-         * @param id_segment
-         */
-        addOriginalTranslation: function (d, id_segment) {
-            if (d.original !== '') {
-                setTimeout(function (  ) {
-                    SegmentActions.addOriginalTranslation(id_segment, UI.getSegmentFileId($('#segment-' + id_segment)), d.original);
-                });
-            }
-        },
         showFixedAndRebuttedButtons ( status ) {
             status = status.toLowerCase();
             return status == 'rejected' || status == 'fixed' || status == 'rebutted' ;
