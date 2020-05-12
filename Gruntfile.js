@@ -82,6 +82,15 @@ module.exports = function(grunt) {
                 ],
                 dest: 'static/build/js/ebay-core.js'
             },
+            analyze: {
+                src: [
+                    'static/src/js/analyze_old.js',
+                    'static/src/js/forcedelivery.js',
+                    'static/src/js/outsource_old.js',
+                    // basePath + 'cat_source/es6/ajax_utils/*.js'
+                ],
+                dest: 'static/build/js/analyze_old.js'
+            },
         },
         sass: {
             app: {
