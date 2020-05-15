@@ -133,6 +133,7 @@
                     <MC.SegmentMainButtons
                         status={data.status}
                         sid={data.sid}
+                        segment={this.props.segment.sid}
                     />
                 </ul>
             } else {

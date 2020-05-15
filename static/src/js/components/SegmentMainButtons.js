@@ -41,11 +41,6 @@ class SegmentMainButtons extends React.Component{
         MateCat.db.addListener('segment_translation_issues', ['insert', 'update', 'delete'], this.updateButtonToShow.bind(this) );
 
         var el = UI.getSegmentById(this.props.sid);
-        el.on( 'modified', this.segmentModifiedChanged.bind(this) ) ;
-    }
-
-    segmentModifiedChanged (event) {
-        this.setState({ buttonDisabled : !this.isSegmentModified });
     }
 
     componentWillUnmount() {
@@ -53,7 +48,6 @@ class SegmentMainButtons extends React.Component{
         MateCat.db.removeListener('segment_translation_issues', ['insert', 'update', 'delete'], this.updateButtonToShow );
 
         var el = UI.getSegmentById(this.props.sid);
-        el.off( 'modified', this.segmentModifiedChanged ) ;
     }
 
     render () {
@@ -66,7 +60,7 @@ class SegmentMainButtons extends React.Component{
         } else {
 
             return <div className="react-buttons">
-                <SegmentFixedButton status={this.state.status} sid={this.props.sid} disabled={this.state.buttonDisabled}  />
+                <SegmentFixedButton status={this.state.status} sid={this.props.sid} disabled={this.props.segment.modified}  />
             </div>
         }
     }
