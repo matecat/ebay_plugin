@@ -166,7 +166,7 @@ section.opened .textarea-container {
     right: 0;
     top: 0;
     height: 33px;
-    background: 
+    background:
     repeating-linear-gradient( 135deg, transparent, transparent 8px, #fff 8px, #fff 12px ),
     linear-gradient( to bottom, #7cc576, #7cc576  )
 }
@@ -182,7 +182,7 @@ section.opened .textarea-container {
     right: 0;
     top: 0;
     height: 33px;
-    background: 
+    background:
     repeating-linear-gradient( 135deg, transparent, transparent 8px, #fff 8px, #fff 12px ),
     linear-gradient( to bottom, #dc2e34, #dc2e34  )
 }
@@ -255,8 +255,8 @@ section {
     position: fixed;
     top: 50px;
     right: 0;
-    width: 25%;
-    z-index: 1;
+    width: 24%;
+    z-index: 3;
     min-width: 215px;
     text-align: left;
     overflow: scroll;

@@ -25,7 +25,7 @@ class ReviewTranslationVersion extends React.Component {
     }
 
     translationMarkup () {
-        return { __html : TagUtils.decodePlaceholdersToText( this.props.translation ) };
+        return { __html : TagUtils.decodePlaceholdersToTextSimple( this.props.translation ) };
     }
 
     toggleTrackChanges (e) {
