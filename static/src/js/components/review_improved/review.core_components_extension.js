@@ -1,4 +1,3 @@
-import TagUtils from "../../../../../../../public/js/cat_source/es6/utils/tagUtils";
 
 (function() {
     let ReviewImprovedSideButton = require( './ReviewImprovedTranslationIssuesSideButton' ).default;
