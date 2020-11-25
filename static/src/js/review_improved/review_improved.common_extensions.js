@@ -52,7 +52,6 @@ if ( ReviewImproved.enabled() )
         },
         openIssuesPanel : function(data, openSegment) {
             $('body').addClass('review-improved-opened');
-            UI.hackIntercomButton( true );
             CatToolActions.closeSearch();
 
             $('body').addClass('side-tools-opened review-side-panel-opened');
@@ -65,18 +64,8 @@ if ( ReviewImproved.enabled() )
             }
             return true;
         },
-        hackIntercomButton(on ) {
-            var button = $( document ).find( '.support-tip-button' );
-            if ( on ) {
-                button.data( 'mbc-zindex', button.css( 'z-index' ) );
-                button.css( 'z-index', -1 );
-            } else {
-                button.css( 'z-index', button.data( 'mbc-zindex' ) );
-            }
-        },
         closeIssuesPanel : function() {
 
-            UI.hackIntercomButton( false );
             SegmentActions.closeIssuesPanel();
             $('body').removeClass('side-tools-opened review-side-panel-opened review-improved-opened');
             if ( UI.currentSegmentId ) {
