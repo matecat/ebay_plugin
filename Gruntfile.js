@@ -77,8 +77,6 @@ module.exports = function(grunt) {
                     'static/src/js/review_improved/review_improved.translate_events.js',
                     'static/src/js/review_improved/review_improved.review_extension.js',
                     'static/src/js/review_improved/review_improved.review_events.js',
-                    'static/src/js/review_improved/review_improved.rangy-hack.js',
-
                 ],
                 dest: 'static/build/js/ebay-core.js'
             },
