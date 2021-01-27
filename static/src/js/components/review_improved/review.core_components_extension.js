@@ -1,3 +1,4 @@
+
 (function() {
     let ReviewImprovedSideButton = require( './ReviewImprovedTranslationIssuesSideButton' ).default;
 
@@ -79,6 +80,7 @@
         let originalGetTargetArea = SegmentTarget.prototype.getTargetArea;
         SegmentTarget.prototype.getTargetArea = function ( translation ) {
             if ( ReviewImproved && ReviewImproved.enabled() && Review.enabled() ) {
+                translation = TagUtils.matchTag(TagUtils.decodeHtmlInTag(TagUtils.decodePlaceholdersToTextSimple(translation)))
                 return <div className="textarea-container" onClick={this.onClickEvent.bind( this )}>
                     <div className="targetarea issuesHighlightArea errorTaggingArea"
                          dangerouslySetInnerHTML={this.allowHTML( translation )}/>

@@ -1,7 +1,7 @@
 let ReviewTranslationVersion = require("./ReviewTranslationVersion").default;
 class TranslationIssuesOverviewPanel extends React.Component {
-    
-    
+
+
     constructor(props) {
         super(props);
 
@@ -42,7 +42,7 @@ class TranslationIssuesOverviewPanel extends React.Component {
     originalTarget () {
         let segment = MateCat.db.segments.by('sid', this.props.sid);
         let original_target = this.getOriginalTarget( segment );
-        return { __html : TagUtils.decodePlaceholdersToText( original_target ) };
+        return { __html : TagUtils.decodePlaceholdersToTextSimple( original_target ) };
     }
 
     getTrackChangesForCurrentVersion () {
