@@ -62,7 +62,7 @@ class ReviewImproved extends AbstractRevisionFeature {
         $controller = new QualityReportController( $request, $response, $service, $app);
         $template_path = dirname(__FILE__) . '/ReviewImproved/View/Html/quality_report.html' ;
         $controller->setView( $template_path );
-        $controller->respond();
+        $controller->respond('');
     }
 
     /**
