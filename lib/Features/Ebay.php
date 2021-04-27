@@ -316,14 +316,14 @@ class Ebay extends BaseFeature {
     }
 
     public static function analyzeRoute($request, $response, $service, $app) {
-        $controller    = new Ebay\Controller\AnalyzeController( $request, $response, $service );
+        $controller    = new Ebay\Controller\AnalyzeController( $request, $response, $service, $app );
         $template_path = dirname( __FILE__ ) . '/Ebay/View/Html/analyze.html';
         $controller->setView( $template_path );
-        $controller->respond();
+        $controller->respond('');
     }
 
     public static function referenceFilesRoute($request, $response, $service, $app) {
-        $controller    = new Ebay\Controller\ReferenceFilesController( $request, $response, $service );
+        $controller    = new Ebay\Controller\ReferenceFilesController( $request, $response, $service, $app );
         $controller->downloadFile();
     }
 

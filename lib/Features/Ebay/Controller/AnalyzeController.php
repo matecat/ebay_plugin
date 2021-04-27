@@ -29,12 +29,15 @@ class AnalyzeController extends BaseKleinViewController {
 
     protected $model ;
 
+    protected $app;
+
     // TODO: refactor this controller to make it call the parent constructor
     // Calling bootstrap start here should not be necessary, since this extends a stateful controller
-    public function __construct( \Klein\Request $request, \Klein\Response $response, $service) {
+    public function __construct( \Klein\Request $request, \Klein\Response $response, $service, $app) {
         $this->request = $request;
         $this->response = $response;
         $this->service = $service;
+        $this->app = $app;
 
         $this->findProject();
 
@@ -46,7 +49,8 @@ class AnalyzeController extends BaseKleinViewController {
         $this->view = new PHPTALWithAppend( $template_name );
     }
 
-    public function respond() {
+    public function respond($method) {
+
         $this->user = $this->currentUser() ;
 
         $decorator = new AnalyzeDecorator( $this->model );

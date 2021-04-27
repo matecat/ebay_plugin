@@ -29,7 +29,7 @@ class QualityReportController extends \BaseKleinViewController {
      */
     private $model;
 
-    public function respond() {
+    public function respond($method) {
 
         $this->performValidations();
 

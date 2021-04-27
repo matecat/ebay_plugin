@@ -23,12 +23,14 @@ class ReferenceFilesController {
     private $service;
     private $response;
     private $request;
+    private $app;
 
 
-    public function __construct( Request $request, Response $response, $service ) {
+    public function __construct( Request $request, Response $response, $service, $app ) {
         $this->request  = $request;
         $this->response = $response;
         $this->service  = $service;
+        $this->app = $app;
 
         $this->findProject();
     }
