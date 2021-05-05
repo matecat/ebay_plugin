@@ -2,6 +2,8 @@ module.exports = function(grunt) {
 
     var es2015Preset = require('babel-preset-env');
     var reactPreset = require('babel-preset-react');
+    var sass = require('node-sass');
+
 
     function stripPrefixForTemplates(filePath) {
         /**
@@ -93,6 +95,7 @@ module.exports = function(grunt) {
         sass: {
             app: {
                 options : {
+                    implementation: sass,
                     sourceMap : false,
                 },
                 src: [
