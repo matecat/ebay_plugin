@@ -105,6 +105,7 @@ module.exports = function(grunt) {
             },
             upload: {
                 options : {
+                    implementation: sass,
                     sourceMap : false,
                 },
                 src: [
