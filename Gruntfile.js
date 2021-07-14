@@ -88,7 +88,7 @@ module.exports = function (grunt) {
           'static/src/js/analyze_old.js',
           'static/src/js/forcedelivery.js',
           'static/src/js/outsource_old.js',
-          // basePath + 'cat_source/es6/ajax_utils/*.js'
+          'static/src/js/common.js',
         ],
         dest: 'static/build/js/analyze_old.js',
       },

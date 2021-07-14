@@ -1,4 +1,4 @@
-
+import React from 'react';
 
 class QualityReportVersions extends React.Component {
     constructor (props) {

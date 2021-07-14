@@ -80,14 +80,7 @@ UI = {
 			UI.confirmSplit();
 		}).on('click', '.mergebtn:not(.disabled)', function(e) {
 			e.preventDefault();
-			APP.confirm({
-				name: 'confirmMerge', 
-				cancelTxt: 'Cancel', 
-				callback: 'confirmMerge',
-				caller: $(this),
-				okTxt: 'Continue', 
-				msg: "This will cause the merging of all chunks in only one job.<br>This operation cannot be canceled."
-			});
+			UI.confirmMerge($(this));
 		}).on('click', '.downloadAnalysisReport', function(e) {
             e.preventDefault();
             UI.downloadAnalysisReport();
@@ -111,27 +104,6 @@ UI = {
 
         this.checkQueryParams();
 
-        // this.setTeamHeader();
-
-		var self = this;
-		var headerMountPoint = $("header")[0];
-		ReactDOM.render(React.createElement(Header,{
-			loggedUser: config.isLoggedIn,
-			showSubHeader: false,
-			showModals: false,
-			changeTeam: false,
-			user: APP.USER.STORE
-		}), headerMountPoint);
-
-		// $.ajax({
-		// 	url: APP.getRandomUrl() + 'api/app/user',
-		// 	dataType: 'json',
-		// 	async: true,
-		// 	xhrFields: { withCredentials: true }
-		// }).done(function( data ) {
-		// 	// self.setTeamHeader();
-		// });
-
 	},
 
 	getProjectInfo: function () {
@@ -142,63 +114,6 @@ UI = {
             }
         });
 	},
-
-	setTranslateButtonEvent: function () {
-        // trigger the process for getting and displaying an outsource quote
-        $(".translate").click(function(e) {
-            e.preventDefault();
-            var linkPieces = $( this ).attr( "href" ).split( "/" );
-            var jPieces = linkPieces[ linkPieces.length - 1 ].split( "-" );
-            var idJob = jPieces[0];
-
-            var words, sourceTxt, targetTxt;
-
-            if (UI.currentOutsourceProject) {
-                UI.currentOutsourceJob = UI.currentOutsourceProject.jobs.find(function (job) {
-                    return parseInt( job.id ) === parseInt( idJob );
-                });
-
-                words = $(".tablestats[data-pwd='" + jPieces[1] + "'] .stat-payable").text();
-                sourceTxt = UI.currentOutsourceJob.sourceTxt;
-                targetTxt = UI.currentOutsourceJob.targetTxt;
-
-            } else {
-                words = $( ".tablestats[data-pwd='" + jPieces[ 1 ] + "'] .stat-payable" ).text() ;
-                sourceTxt = $( "div[data-jid='" + jPieces[ 0 ] + "'] .source_lang" ).text();
-                targetTxt = $( "div[data-jid='" + jPieces[ 0 ] + "'] .target_lang" ).text();
-
-                UI.currentOutsourceJob = {
-                    id: jPieces[ 0 ],
-                    password: jPieces[ 1 ],
-                    stats: {
-                        TOTAL_FORMATTED: words
-                    },
-                    sourceTxt: sourceTxt,
-                    targetTxt: targetTxt
-                };
-                UI.currentOutsourceProject = {
-                    id: config.id_project,
-                    password: config.password,
-                };
-            }
-
-            $( ".title-source" ).text( sourceTxt );
-            $( ".title-target" ).text( targetTxt );
-            $( ".title-words" ).text( words );
-
-            UI.currentOutsourceUrl = $( this ).attr( "href" );
-            var props = {
-                project: UI.currentOutsourceProject,
-                job: UI.currentOutsourceJob,
-                url: UI.currentOutsourceUrl,
-                fromManage: false,
-                translatorOpen: !!(UI.currentOutsourceJob.translator),
-                showTranslatorBox: false
-            };
-            var style = {width: '970px',maxWidth: '970px', top: '45%'};
-            APP.ModalWindow.showModalComponent(OutsourceModal, props, "Translate", style);
-        });
-    },
 
 	updateProjectData: function () {
         this.getProject(config.id_project).done(function (response) {
@@ -241,7 +156,7 @@ UI = {
     },
 	performPreCheckSplitComputation: function(doStringSanitization) {
 
-		ss = 0;
+		var ss = 0;
 		$('.popup-split .jobs .input-small').each(function() {
 
 			if (doStringSanitization === false) {
@@ -254,7 +169,7 @@ UI = {
 			ss += parseInt($(this).val());
 		});
 
-		diff = ss - parseInt($('.popup-split .total .total-w').attr('data-val'));
+		var diff = ss - parseInt($('.popup-split .total .total-w').attr('data-val'));
 		if (diff != 0) {
 			$('.popup-split .btnsplit .done').addClass('none');
 			$('.popup-split #exec-split').removeClass('none').addClass('disabled').attr('disabled', 'disabled');
@@ -351,12 +266,11 @@ UI = {
 			}
 		});
 	},
-	confirmMerge: function() {
-		ob = APP.callerObject;
+	confirmMerge: function(ob) {
 		$(ob).addClass('disabled');
 		var jobContainer = $(ob).parents('.jobcontainer');
 		var job = jobContainer.find('tbody.tablestats');
-		jid = job.attr('data-jid');
+		var jid = job.attr('data-jid');
 		APP.doRequest({
 			data: {
 				action: "splitJob",
@@ -428,7 +342,7 @@ UI = {
 	},
 	pollData: function() {
 		if (this.stopPolling) return;
-
+		var data;
 		var pid = config.id_project;
         var ppassword = config.password ;
 		if (config.id_job) {
@@ -456,7 +370,7 @@ UI = {
 						$( '.loadingbar' ).removeClass( 'start' );
 
 						if ( config.daemon_warning ) {
-
+							var analyzerNotRunningErrorString;
 							if ( -1 == config.support_mail.indexOf( '@' ) ) {
 								analyzerNotRunningErrorString = 'The analysis seems not to be running. Contact ' + config.support_mail + '.';
 							} else {
@@ -511,9 +425,9 @@ UI = {
 					}
 
 					var standard_words = $( '#standard-equivalent-words .word-number' );
-					old_standard_words = standard_words.text();
+					var old_standard_words = standard_words.text();
 
-					newSText = '';
+					var newSText = '';
 					if ( s.STATUS == 'DONE' || s.TOTAL_STANDARD_WC > 0 ) {
 						standard_words.removeClass( 'loading' );
 						$( '#standard-equivalent-words .days' ).show();
@@ -529,8 +443,8 @@ UI = {
 					$( '#standard-equivalent-words .unit' ).text( s.STANDARD_WC_UNIT );
 
 					var matecat_words = $( '#matecat-equivalent-words .word-number' );
-					old_matecat_words = matecat_words.text();
-					newMText = '';
+					var old_matecat_words = matecat_words.text();
+					var newMText = '';
 					if ( s.STATUS == 'DONE' || s.TOTAL_PAYABLE > 0 ) {
 						matecat_words.removeClass( 'loading' );
 						$( '#matecat-equivalent-words .days' ).show();
@@ -753,8 +667,6 @@ UI = {
                         $( '#longloading .approved-bar' ).css( 'width', '100%' );
                         $( '#analyzedSegmentsReport' ).text( s.SEGMENTS_ANALYZED_PRINT );
 
-                        precomputeOutsourceQuotes( $( '.uploadbtn.translate' ) );
-
                         setTimeout( function () {
                             $( '#shortloading' ).remove();
                             $( '#longloading .meter' ).remove();
@@ -775,8 +687,6 @@ UI = {
                         var mew = $( '#matecat-equivalent-words' );
                         mew.find('.word-number').removeClass( 'loading' ).text( rwc.find('.word-number').text() );
                         mew.find('.days').html( rwc.find('.days' ).html() ).show();
-
-                        precomputeOutsourceQuotes( $( '.uploadbtn.translate' ) );
 
                         $( '#shortloading' ).remove();
                         $( '#longloading .meter' ).remove();
@@ -890,12 +800,12 @@ UI = {
 
 	},
 
-    setTeamHeader: function () {
+    /*setTeamHeader: function () {
         APP.USER.loadUserData().done(function (data) {
             var selectedTeam = APP.getLastTeamSelected(data.teams);
             $('.team-name').text(selectedTeam.name);
         })
-    },
+    },*/
 
     updateJobPassword: function (password) {
         var $job = $('.tablestats[data-jid='+UI.currentOutsourceJob.id+']');
@@ -955,16 +865,17 @@ function wordCountTotalOrPayable( job ) {
 }
 
 function fit_text_to_container(container, child) {
+	var a;
 	if (typeof (child) != 'undefined') {
 		a = $(child, container).text();
 	} else {
 		a = container.text();
 	}
-	w = container.width(); //forse non serve
+	var w = container.width(); //forse non serve
 
-	first_half = a[0];
-	last_index = a.length - 1;
-	last_half = a[last_index];
+	var first_half = a[0];
+	var last_index = a.length - 1;
+	var last_half = a[last_index];
 
 
 	if (typeof (child) != 'undefined') {
@@ -973,12 +884,12 @@ function fit_text_to_container(container, child) {
 		container.text(first_half + "..." + last_half);
 	}
 
-	h = container.height();
-	hh = $(child, container).height();
+	var h = container.height();
+	var hh = $(child, container).height();
 
 	for (var i = 1; i < a.length; i = i + 1) {
-		old_first_half = first_half;
-		old_last_half = last_half;
+		var old_first_half = first_half;
+		var old_last_half = last_half;
 
 		first_half = first_half + a[i];
 		last_half = a[last_index - i] + last_half;
@@ -989,7 +900,7 @@ function fit_text_to_container(container, child) {
 		} else {
 			container.text(first_half + "..." + last_half);
 		}
-		h2 = container.height();
+		var h2 = container.height();
 
 		if (h2 > h) {
 			if (typeof (child) != 'undefined') {
@@ -1012,24 +923,6 @@ function fit_text_to_container(container, child) {
 			break;
 		}
 	}
-}
-
-// as soon as the analysis is done, start pre-fetching outsources quotes
-function precomputeOutsourceQuotes( elementsToAskQuoteFor ) {
-    // if no elements left to ask quote for then return
-    if( elementsToAskQuoteFor.length == 0 ) {
-        return;
-    }
-
-    getOutsourceQuote( $( elementsToAskQuoteFor.splice( 0, 1 ) ), function( quoteData ) {
-        // remember whether outsource popup should be rendered compressed (0) or expanded (1)
-
-        if ( quoteData.data )  {
-            UI.showPopupDetails = quoteData.data[0][0].show_info;
-            // recursively call self with the remaining elements ( Array.splice(0,1) has already reduced the size )
-            precomputeOutsourceQuotes( elementsToAskQuoteFor );
-        }
-    });
 }
 
 $(document).ready(function() {
