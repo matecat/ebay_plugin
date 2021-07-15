@@ -9,6 +9,7 @@
 namespace Features\ReviewImproved\Decorator;
 
 use Bootstrap;
+use Features\Ebay\Utils\Routes;
 use Features\QaCheckBlacklist;
 use Features\QaCheckGlossary;
 use Features\ReviewExtended\Model\QualityReportModel;
@@ -78,6 +79,10 @@ class QualityReportDecorator extends \AbstractModelViewDecorator {
             $template->back_label = 'Back to Translate' ;
             $template->back_url = $this->getTranslateUrl() ;
         }
+        $template->append('footer_js', Routes::staticBuild('js/qa-report-improved.js') );
+        $template->append('css_resources', Routes::staticSrc('css/style.css') );
+
+
 
         $template->model = $this->model->getStructure();
 

@@ -7,6 +7,8 @@
   "author": "MateCat Team",
   "license": "LGPL",
   "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "@babel/core": "^7.13.14",
     "@babel/preset-env": "^7.13.12",
     "@babel/preset-react": "^7.13.13",

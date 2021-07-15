@@ -1,3 +1,5 @@
+import ReactDOM from 'react-dom'
+import React from 'react'
 let QualityReportVersions = require('../components/review_improved/QualityReportVersions').default ;
 
 let QAReportVersions = {
