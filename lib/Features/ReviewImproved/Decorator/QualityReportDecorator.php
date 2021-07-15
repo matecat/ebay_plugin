@@ -80,6 +80,8 @@ class QualityReportDecorator extends \AbstractModelViewDecorator {
             $template->back_url = $this->getTranslateUrl() ;
         }
         $template->append('footer_js', Routes::staticBuild('js/qa-report-improved.js') );
+        $template->append('css_resources', Routes::staticSrc('css/style.css') );
+
 
 
         $template->model = $this->model->getStructure();
