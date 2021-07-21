@@ -145,7 +145,7 @@ UI = {
             }
         });
     },
-	
+
     getProject: function(id) {
 
         return $.ajax({
@@ -282,7 +282,7 @@ UI = {
 			complete: function(d) {
 				location.reload();
 			}
-		});		
+		});
 	},
 	confirmSplit: function(job) {
 
@@ -305,7 +305,7 @@ UI = {
 			success: function(d) {
 //                setTimeout(function(){
 				location.reload();
-//                },8000);                         
+//                },8000);
 			}
 		});
 	},

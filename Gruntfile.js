@@ -42,8 +42,16 @@ module.exports = function (grunt) {
           },
         },
         src: [
+          'static/src/js/db.js',
+          'static/src/js/review_improved/review_improved.js',
+          'static/src/js/review_improved/review_improved.common_extensions.js',
+          'static/src/js/review_improved/review_improved.common_events.js',
+          'static/src/js/review_improved/review_improved.translate_extensions.js',
+          'static/src/js/review_improved/review_improved.review_extension.js',
+          'static/src/js/review_improved/review_improved.review_events.js',
           'static/src/js/components/review_improved/*.js',
           'static/src/js/components/*.js',
+
         ],
         dest: 'static/build/js/ebay-components.js',
       },
@@ -70,18 +78,10 @@ module.exports = function (grunt) {
         },
         src: [
           'static/src/js/libs/handlebars.runtime-v4.0.5.js',
-          'static/src/js/libs/lokijs.min.js',
           'static/build/js/templates.js',
-          'static/src/js/db.js',
-          'static/src/js/review_improved/review_improved.js',
-          'static/src/js/review_improved/review_improved.common_extensions.js',
-          'static/src/js/review_improved/review_improved.common_events.js',
-          'static/src/js/review_improved/review_improved.translate_extensions.js',
-          'static/src/js/review_improved/review_improved.translate_events.js',
-          'static/src/js/review_improved/review_improved.review_extension.js',
-          'static/src/js/review_improved/review_improved.review_events.js',
+          'static/src/js/libs/lokijs.min.js',
         ],
-        dest: 'static/build/js/ebay-core.js',
+        dest: 'static/build/js/ebay-lib.js',
       },
       analyze: {
         src: [

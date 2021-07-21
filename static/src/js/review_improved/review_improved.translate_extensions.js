@@ -1,13 +1,6 @@
 if ( ReviewImproved.enabled() && !config.isReview)
-(function($, root, undefined) {
+(function($) {
 
-    var unmountReactButtons = function( segment_el ) {
-        console.log( 'unmountReactButtons', segment_el );
-        var mountpoint = segment_el.find('[data-mount="main-buttons"]')[0];
-        ReactDOM.unmountComponentAtNode( mountpoint );
-    };
-
-    // var original_createButtons = UI.createButtons ;
 
     var originalBindShortcuts = UI.bindShortcuts ;
 
@@ -52,4 +45,4 @@ if ( ReviewImproved.enabled() && !config.isReview)
         }
     })
 
-})(jQuery, window);
+})(jQuery);

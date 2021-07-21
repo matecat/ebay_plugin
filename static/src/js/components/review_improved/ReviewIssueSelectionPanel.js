@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 const ReviewIssueCategorySelector = require('./ReviewIssueCategorySelector').default;
 class ReviewIssueSelectionPanel extends React.Component{
 

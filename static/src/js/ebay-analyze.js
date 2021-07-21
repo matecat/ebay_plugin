@@ -1,3 +1,4 @@
+import _ from 'lodash'
 
 $.extend( UI, {
     setTranslateButtonEvent: function () {},

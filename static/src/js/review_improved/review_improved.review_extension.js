@@ -1,8 +1,7 @@
 if ( ReviewImproved.enabled() && config.isReview ) {
-(function($, root, undefined) {
+(function($) {
 
     var originalBindShortcuts = UI.bindShortcuts;
-    var originalSetShortcuts = UI.setShortcuts;
 
     var rejectKeyDownEvent = function(e) {
         e.preventDefault();

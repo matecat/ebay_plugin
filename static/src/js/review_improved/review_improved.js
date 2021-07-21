@@ -11,14 +11,15 @@
  * For translate page, review specific statuses are not offered.
  *
  */
-const ReviewImproved = window.ReviewImproved || {};
+import _ from 'lodash';
+window.ReviewImproved = window.ReviewImproved || {};
 
 ReviewImproved.enabled = function() {
     return Review.type === 'improved';
 };
 
 if ( ReviewImproved.enabled() )
-(function($, ReviewImproved, undefined) {
+(function($, ReviewImproved) {
 
 
 
@@ -54,7 +55,7 @@ if ( ReviewImproved.enabled() )
             );
 
             $.getJSON(issue_comments).done(function(data) {
-                $.each( data.comments, function( comment ) {
+                $.each( data.comments, function(  ) {
                     MateCat.db.upsert('segment_translation_issue_comments', 'id', this );
                 });
             });
@@ -123,29 +124,3 @@ if ( ReviewImproved.enabled() && config.isReview ) {
 
     });
 }
-
-(function(undefined) {
-    SegmentActivator = {};
-    SegmentActivator.registry = [];
-    SegmentActivator.activate = function( sid ) {
-        if ( typeof sid === 'undefined' ) {
-            console.debug( 'sid is undefined', sid);
-            return ;
-        }
-
-        for (var i = 0; i < this.registry.length ; ++i) {
-            var callback = this.registry[i];
-            callback( sid );
-        }
-    };
-    SegmentActivator.registry.push(function( sid ) {
-        var segment = UI.getSegmentById( sid );
-        // TODO: refactor this, the click to activate a
-        // segment is not a good way to handle.
-        if ( config.isReview ) {
-            segment.find('.errorTaggingArea').click();
-        } else {
-            segment.find('.targetarea').click();
-        }
-    });
-})();

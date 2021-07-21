@@ -73,13 +73,7 @@ $.extend(UI, {
             APP.closePopup();
 
 		});
-        //
-        // $('.modal.outsource input.out-email').on('keyup', function () {
-        //     _.debounce(function() {
-        //         // UI.checkInputEmailInput();
-        //         UI.checkSendToTranslatorButton();
-        //     }, 300)();
-        // });
+
 
         $(".outsource.modal .send-to-translator-btn").on('click', function(e) {
             e.preventDefault();

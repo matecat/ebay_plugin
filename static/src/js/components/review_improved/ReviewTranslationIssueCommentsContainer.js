@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 class ReviewTranslationIssueCommentsContainer extends React.Component{
 
     constructor(props) {
@@ -35,7 +37,7 @@ class ReviewTranslationIssueCommentsContainer extends React.Component{
 
     commentsChanged() {
         this.setState({
-            comment_text: '', 
+            comment_text: '',
             sendLabel : 'Send',
             replying : false,
             comments : MateCat.db.segment_translation_issue_comments.findObjects({
@@ -129,7 +131,7 @@ class ReviewTranslationIssueCommentsContainer extends React.Component{
           message : this.state.comment_text,
           source_page : (config.isReview ? 2 : 1)  // TODO: move this to UI property
         };
-        
+
         this.setState({ rebutLabel : 'Sending', rebutDisabled : true, sendDisabled : true });
 
         $.when(
@@ -164,11 +166,11 @@ class ReviewTranslationIssueCommentsContainer extends React.Component{
         var terminal ;
 
         var sortedComments = _.sortBy(this.state.comments, function(comment) {
-            return parseInt(comment.id); 
-        }); 
+            return parseInt(comment.id);
+        });
 
         var commentLines = sortedComments.map(function(comment, index) {
-            var source_page ; 
+            var source_page ;
             if ( comment.source_page == '1' ) {
                 source_page = <strong className="review-issue-translator">Translator:</strong> ;
             } else {
@@ -178,7 +180,7 @@ class ReviewTranslationIssueCommentsContainer extends React.Component{
             return <div key={comment.id} className="review-issue-comment-detail">
                 {source_page} {comment.message}
             </div>;
-        }); 
+        });
 
         if ( !this.state.replying ) {
             var undoRebutButton;
@@ -255,7 +257,7 @@ class ReviewTranslationIssueCommentsContainer extends React.Component{
             </div>
             <hr/>
             {terminal}
-        </div>; 
+        </div>;
     }
 
 }

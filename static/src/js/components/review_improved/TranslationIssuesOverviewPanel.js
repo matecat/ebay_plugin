@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 let ReviewTranslationVersion = require("./ReviewTranslationVersion").default;
 class TranslationIssuesOverviewPanel extends React.Component {
 

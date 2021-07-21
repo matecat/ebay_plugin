@@ -19,7 +19,8 @@
     "grunt-contrib-concat": "~1.0.1",
     "grunt-sass": "~3.1.0",
     "grunt-contrib-handlebars": "^1.0.0",
-    "node-sass": "^6.0.0"
+    "node-sass": "^6.0.0",
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "grunt-cli": "^1.4.2",
