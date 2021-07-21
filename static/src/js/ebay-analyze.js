@@ -40,6 +40,7 @@ $(function() {
     var STATUS_MISSING_COMPLETED_CHUNKS = 'missing_completed_chunks' ;
 
     var currentStatus = null ;
+    var completionDate;
 
     $( '.mergebtn, .splitbtn' ).removeClass( 'disabled' );
 
@@ -55,7 +56,7 @@ $(function() {
 
             var cell = $(e.currentTarget).closest('td');
             $(e.currentTarget).remove();
-            element = $('<span class="job-undoComplete-label">Not Completed yet</span>') ;
+            var element = $('<span class="job-undoComplete-label">Not Completed yet</span>') ;
             cell.empty();
             cell.append(element);
 
@@ -68,8 +69,7 @@ $(function() {
     }
 
     function drawButtonsByChunkCompletionData( data ) {
-        data1 = data ;
-        _.each( data.project_status.translate, function( item ) {
+        data.project_status.translate.forEach(function( item ) {
 
             var selector = sprintf( 'tbody[data-jid=%s][data-pwd=%s]', item.id, item.password ),
                 cell = $( selector ).find( 'tr:first td.undoCompleteBtnContainer' ) ,

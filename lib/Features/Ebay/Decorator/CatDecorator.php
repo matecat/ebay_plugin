@@ -34,7 +34,7 @@ class CatDecorator extends \AbstractDecorator {
 
         $project = $this->controller->getChunk()->getProject() ;
 
-        $this->template->append('footer_js', Routes::staticBuild('js/ebay-core.js') );
+        $this->template->append('footer_js', Routes::staticBuild('js/ebay-lib.js') );
         $this->template->append('footer_js', Routes::staticBuild('js/ebay-components.js') );
         $this->template->append('css_resources', Routes::staticBuild('css/review_improved.css') );
 

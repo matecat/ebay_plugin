@@ -1,10 +1,9 @@
-if ( true ) // < TODO: investigate: chrome raises weird excetpion if this is missing .
-(function($, root, undefined) {
+import _ from 'lodash'
+(function($, root, _) {
     var _db = new root.loki('matecat.json');
-    var _ = root._;
 
     root.MateCat = root.MateCat || {};
-    db = {};
+    window.db = {};
 
     // AppState experimental
     db.appstate = _db.addCollection('appstate', {
@@ -75,4 +74,4 @@ if ( true ) // < TODO: investigate: chrome raises weird excetpion if this is mis
         putSegmentsInStore( data );
     });
 
-})(jQuery, window);
+})(jQuery, window, _);

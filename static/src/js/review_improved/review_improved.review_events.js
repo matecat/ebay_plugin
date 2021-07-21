@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 if ( ReviewImproved.enabled() ) {
     $(document).ready(function() {
         // first step in the direction to not rely on HTML rendering.
@@ -26,21 +28,6 @@ if ( ReviewImproved.enabled() && config.isReview ) {
             SegmentActions.scrollToSegment( id );
         }
     });
-
-    function getPreviousTranslationText( segment ) {
-        var record = RI.getSegmentRecord(segment);
-        var version ;
-        var prevBase = record.version_number ;
-        version = db.segment_versions.findObject({
-            id_segment : parseInt(record.sid),
-            version_number : (prevBase -1) + ''
-        });
-        if ( version ) {
-            return version.translation;
-        } else {
-            return false;
-        }
-    }
 
     $(document).on('translation:change', function() {
         ReviewImproved.reloadQualityReport();
@@ -83,7 +70,7 @@ if ( ReviewImproved.enabled() && config.isReview ) {
         var container = $(e.target).closest('.errorTaggingArea') ;
 
         if ( textSelectedInsideSelectionArea(selection, container ) )  {
-            var selection = CursorUtils.getSelectionData( selection, container ) ;
+            selection = CursorUtils.getSelectionData( selection, container ) ;
             SegmentActions.openIssuesPanel({ sid: segmentId,  selection : selection }, true);
         }
     });
@@ -112,7 +99,7 @@ if ( ReviewImproved.enabled() && config.isReview ) {
 
 
 
-    getLatestScoreForSegment = function( sid ) {
+    var getLatestScoreForSegment = function( sid ) {
         if (! sid) {
             return ;
         }
