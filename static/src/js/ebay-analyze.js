@@ -1,3 +1,4 @@
+import {sprintf} from 'sprintf-js'
 
 $.extend( UI, {
     setTranslateButtonEvent: function () {},

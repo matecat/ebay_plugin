@@ -113,7 +113,6 @@ class AnalyzeDecorator extends AbstractModelViewDecorator {
             $this->__decorateForDqf( $template );
         }
         $template->append('footer_js', Routes::staticBuild('js/analyze_old.js') );
-        $template->append( 'footer_js', Routes::staticSrc( 'js/ebay-analyze.js' ) );
         $template->append('css_resources', Routes::staticSrc('css/analyze_old.css') );
 
         $this->setTemplateVarsAfter( $template );

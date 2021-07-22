@@ -1,3 +1,5 @@
+import {sprintf} from 'sprintf-js'
+
 if ( ReviewImproved.enabled() && config.isReview ) {
 (function($) {
 

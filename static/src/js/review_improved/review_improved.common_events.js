@@ -1,5 +1,7 @@
 // common events
 //
+import {sprintf} from 'sprintf-js'
+
 if ( ReviewImproved.enabled() ) {
 
     $(document).on('segment-filter:filter-data:load', function() {

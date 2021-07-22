@@ -1,3 +1,5 @@
+import {sprintf} from 'sprintf-js'
+
 let ReviewIssuesContainer = require('./ReviewIssuesContainer').default;
 class ReviewTranslationVersion extends React.Component {
 

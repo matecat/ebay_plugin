@@ -70,6 +70,25 @@ module.exports = function (grunt) {
         src: ['static/src/js/quality_report/review_improved.qa_report.js'],
         dest: 'static/build/js/qa-report-improved.js',
       },
+      analyze: {
+        options: {
+          transform: [
+            [
+              'babelify',
+              {presets: ['@babel/preset-react', ['@babel/preset-env']]},
+            ],
+          ],
+          browserifyOptions: {
+            paths: [__dirname + '/node_modules'],
+          },
+        },
+        src: [
+          'static/src/js/analyze_old.js',
+          'static/src/js/common.js',
+          'static/src/js/ebay-analyze.js',
+        ],
+        dest: 'static/build/js/analyze_old.js',
+      },
     },
     concat: {
       app: {
@@ -83,13 +102,7 @@ module.exports = function (grunt) {
         ],
         dest: 'static/build/js/ebay-lib.js',
       },
-      analyze: {
-        src: [
-          'static/src/js/analyze_old.js',
-          'static/src/js/common.js',
-        ],
-        dest: 'static/build/js/analyze_old.js',
-      },
+
     },
     sass: {
       app: {
@@ -124,6 +137,7 @@ module.exports = function (grunt) {
     'handlebars',
     'browserify:components',
     'browserify:qaReportsVersions',
+    'browserify:analyze',
     'concat',
     'sass',
   ])

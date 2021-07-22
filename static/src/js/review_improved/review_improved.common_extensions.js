@@ -1,3 +1,4 @@
+import {sprintf} from 'sprintf-js'
 
 if ( ReviewImproved.enabled() )
     (function($, ReviewImproved) {

@@ -1,6 +1,6 @@
-UI = null;
+window.UI = null;
 
-UI = {
+window.UI = {
 	init: function() {
 		this.stopPolling = false;
         this.pollingTime = 1000;

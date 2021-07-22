@@ -12,6 +12,8 @@
  *
  */
 import _ from 'lodash';
+import {sprintf} from 'sprintf-js'
+
 window.ReviewImproved = window.ReviewImproved || {};
 
 ReviewImproved.enabled = function() {
