@@ -1,4 +1,5 @@
 import {sprintf} from 'sprintf-js'
+import moment from 'moment'
 
 if ( ReviewImproved.enabled() )
     (function($, ReviewImproved) {

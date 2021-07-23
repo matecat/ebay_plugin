@@ -1,4 +1,5 @@
 import {sprintf} from 'sprintf-js'
+import moment from 'moment'
 
 $.extend( UI, {
     setTranslateButtonEvent: function () {},

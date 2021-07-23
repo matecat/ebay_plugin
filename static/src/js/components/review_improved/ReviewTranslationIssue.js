@@ -1,3 +1,4 @@
+import moment from 'moment'
 const ReviewTranslationIssueCommentsContainer = require('./ReviewTranslationIssueCommentsContainer').default;
 class ReviewTranslationIssue extends React.Component{
 
