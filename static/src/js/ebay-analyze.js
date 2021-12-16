@@ -1,244 +1,308 @@
 import {sprintf} from 'sprintf-js'
 import moment from 'moment'
 
-$.extend( UI, {
-    setTranslateButtonEvent: function () {},
-    setFocusEvent: function () {},
-    getProjectInfo: function () {}
-});
-
-function precomputeOutsourceQuotes() {} ;
-
-var removeAssignmentData   ;
+var removeAssignmentData
 
 function dqfDeleteAssignment() {
-    $.ajax({
-        type: 'DELETE',
-        url: sprintf('/api/app/dqf/jobs/%s/%s/%s/assignment/revoke',
-            removeAssignmentData.jid, removeAssignmentData.pwd, removeAssignmentData.what )
-    }).done( function() {
-        var node = findDqfCell(removeAssignmentData.jid, removeAssignmentData.pwd, removeAssignmentData.what );
-        node.text('');
-        node.find('.ui.cancel').hide();
-    });
+  $.ajax({
+    type: 'DELETE',
+    url: sprintf(
+      '/api/app/dqf/jobs/%s/%s/%s/assignment/revoke',
+      removeAssignmentData.jid,
+      removeAssignmentData.pwd,
+      removeAssignmentData.what,
+    ),
+  }).done(function () {
+    var node = findDqfCell(
+      removeAssignmentData.jid,
+      removeAssignmentData.pwd,
+      removeAssignmentData.what,
+    )
+    node.text('')
+    node.find('.ui.cancel').hide()
+  })
 }
 
 function findDqfCell(jid, pwd, page) {
-    return $(sprintf('tbody.tablestats[data-jid=%s][data-pwd=%s] .stat-email-%s', jid, pwd, page ));
+  return $(
+    sprintf(
+      'tbody.tablestats[data-jid=%s][data-pwd=%s] .stat-email-%s',
+      jid,
+      pwd,
+      page,
+    ),
+  )
 }
 
-$.extend( UI, {
-    dqfDeleteAssignment : dqfDeleteAssignment
-});
+$.extend(UI, {
+  dqfDeleteAssignment: dqfDeleteAssignment,
+})
 
-$(function() {
-    /**
-     * Code for chunk and project completion
-     */
+$(function () {
+  /**
+   * Code for chunk and project completion
+   */
 
-    var STATUS_COMPLETED = 'completed' ;
-    var STATUS_NON_COMPLETED = 'non_completed';
-    var STATUS_RECOMPLETABLE = 'recompletable' ;
-    var STATUS_MISSING_COMPLETED_CHUNKS = 'missing_completed_chunks' ;
+  var STATUS_COMPLETED = 'completed'
+  var STATUS_NON_COMPLETED = 'non_completed'
+  var STATUS_RECOMPLETABLE = 'recompletable'
+  var STATUS_MISSING_COMPLETED_CHUNKS = 'missing_completed_chunks'
 
-    var currentStatus = null ;
-    var completionDate;
+  var currentStatus = null
+  var completionDate
 
-    $( '.mergebtn, .splitbtn' ).removeClass( 'disabled' );
+  $('.mergebtn, .splitbtn').removeClass('disabled')
 
-    function clickUndo(e) {
-        var jid = $(e.target).closest('tbody').data('jid'),
-            password = $(e.target).closest('tbody').data('pwd'),
-            id_event = $(e.currentTarget).closest('a').data('event_id') ;
+  function clickUndo(e) {
+    var jid = $(e.target).closest('tbody').data('jid'),
+      password = $(e.target).closest('tbody').data('pwd'),
+      id_event = $(e.currentTarget).closest('a').data('event_id')
 
-        $.ajax({
-            type: 'DELETE',
-            url: sprintf('/api/app/jobs/%s/%s/completion-events/%s', jid, password, id_event )
-        }).done( function() {
+    $.ajax({
+      type: 'DELETE',
+      url: sprintf(
+        '/api/app/jobs/%s/%s/completion-events/%s',
+        jid,
+        password,
+        id_event,
+      ),
+    }).done(function () {
+      var cell = $(e.currentTarget).closest('td')
+      $(e.currentTarget).remove()
+      var element = $(
+        '<span class="job-undoComplete-label">Not Completed yet</span>',
+      )
+      cell.empty()
+      cell.append(element)
 
-            var cell = $(e.currentTarget).closest('td');
-            $(e.currentTarget).remove();
-            var element = $('<span class="job-undoComplete-label">Not Completed yet</span>') ;
-            cell.empty();
-            cell.append(element);
+      // reload status data from server
+      reloadStatusFromServer().done(function () {
+        loadChunkCompletionData()
+      })
+    })
+  }
 
-            // reload status data from server
-            reloadStatusFromServer()
-                .done(function() {
-                    loadChunkCompletionData()
-                }) ;
-        });
+  function drawButtonsByChunkCompletionData(data) {
+    data.project_status.translate.forEach(function (item) {
+      var selector = sprintf(
+          'tbody[data-jid=%s][data-pwd=%s]',
+          item.id,
+          item.password,
+        ),
+        cell = $(selector).find('tr:first td.undoCompleteBtnContainer'),
+        element = null
+
+      if (item.completed) {
+        element = $(
+          '<div><a data-event_id="' +
+            item.event_id +
+            '" href="#" class="standardbtn undoCompleteBtn">Undo Complete</a><span class="job-completed-label">' +
+            sprintf(
+              ' Completed on %s',
+              moment(item.completed_at).format('LLL'),
+            ) +
+            '</span></div>',
+        )
+        cell.addClass('completed')
+
+        element.find('.undoCompleteBtn').on('click', clickUndo)
+      } else {
+        element = $(
+          '<span class="job-undoComplete-label">Not completed yet</span>',
+        )
+      }
+
+      cell.append(element)
+    })
+  }
+
+  function getExplanatoryText() {
+    switch (currentStatus) {
+      case STATUS_NON_COMPLETED:
+        return 'All chunks completed, you can now complete this project'
+      case STATUS_RECOMPLETABLE:
+        return 'All chunks completed, you can now complete this project'
+      case STATUS_COMPLETED:
+        return (
+          'This project was already completed on ' +
+          moment(completionDate).format('LLL')
+        )
+      case STATUS_MISSING_COMPLETED_CHUNKS:
+        return 'Not all chunks have been marked as complete yet.'
+      default:
+        throw 'invalid value for currentStatus'
     }
+  }
 
-    function drawButtonsByChunkCompletionData( data ) {
-        data.project_status.translate.forEach(function( item ) {
+  function displayMessage() {
+    $('.completableStatus').text(getExplanatoryText())
+  }
 
-            var selector = sprintf( 'tbody[data-jid=%s][data-pwd=%s]', item.id, item.password ),
-                cell = $( selector ).find( 'tr:first td.undoCompleteBtnContainer' ) ,
-                element = null ;
+  function chunkDataLoaded(data) {
+    drawButtonsByChunkCompletionData(data)
+    return new $.Deferred().resolve(data)
+  }
 
-            if ( item.completed ) {
-                element = $('<div><a data-event_id="'+ item.event_id +'" href="#" class="standardbtn undoCompleteBtn">Undo Complete</a><span class="job-completed-label">' + sprintf(' Completed on %s', moment(  item.completed_at ).format('LLL') )+ '</span></div>') ;
-                cell.addClass("completed");
-
-                element.find('.undoCompleteBtn').on('click', clickUndo);
-            }
-
-            else {
-                element = $('<span class="job-undoComplete-label">Not completed yet</span>') ;
-            }
-
-            cell.append( element ) ;
-        });
+  function enableOrDisableButtons() {
+    if (currentStatus === STATUS_COMPLETED) {
+      $('.completeProjectButton').addClass('disabled')
+      $('.undoCompleteBtn').addClass('disabled')
+    } else if (
+      currentStatus === STATUS_NON_COMPLETED ||
+      currentStatus === STATUS_RECOMPLETABLE
+    ) {
+      $('.completeProjectButton').removeClass('disabled')
+    } else {
+      $('.completeProjectButton').addClass('disabled')
     }
+  }
 
-    function getExplanatoryText() {
+  function statusChanged() {
+    displayMessage()
+    enableOrDisableButtons()
+  }
 
-        switch( currentStatus ) {
-            case STATUS_NON_COMPLETED :
-                return 'All chunks completed, you can now complete this project' ;
-            case STATUS_RECOMPLETABLE :
-                return 'All chunks completed, you can now complete this project' ;
-            case STATUS_COMPLETED :
-                return 'This project was already completed on ' + moment( completionDate ).format('LLL') ;
-            case STATUS_MISSING_COMPLETED_CHUNKS :
-                return 'Not all chunks have been marked as complete yet.' ;
-            default :
-                throw 'invalid value for currentStatus' ;
-        }
-    }
+  function completeProjectConfirmed() {
+    var path = sprintf(
+      '/plugins/ebay/projects/%s/%s/completion',
+      config.id_project,
+      config.password,
+    )
 
-    function displayMessage() {
-        $('.completableStatus').text( getExplanatoryText()  );
-    }
+    $.post(path, {}).done(function (dat) {
+      $('.undoCompleteBtn').addClass('disabled')
+      $('.completeProjectButton').addClass('disabled')
 
-    function chunkDataLoaded( data ) {
-        drawButtonsByChunkCompletionData( data ) ;
-        return ( new $.Deferred() ).resolve( data ) ;
-    }
+      currentStatus = STATUS_COMPLETED
+      completionDate = new Date()
 
-    function enableOrDisableButtons() {
-        if (currentStatus === STATUS_COMPLETED) {
-            $('.completeProjectButton').addClass('disabled');
-            $('.undoCompleteBtn').addClass('disabled');
-        } else if ( currentStatus === STATUS_NON_COMPLETED || currentStatus === STATUS_RECOMPLETABLE ) {
-            $('.completeProjectButton').removeClass('disabled');
-        } else {
-            $('.completeProjectButton').addClass('disabled');
-        }
-    }
+      statusChanged()
+    })
+  }
 
-    function statusChanged() {
-        displayMessage() ;
-        enableOrDisableButtons() ;
-    }
+  UI.completeProjectConfirmed = completeProjectConfirmed
 
-    function completeProjectConfirmed() {
-        var path = sprintf('/plugins/ebay/projects/%s/%s/completion', config.id_project, config.password ) ;
+  $(document).on('click', '.completeProjectButton', function (e) {
+    e.preventDefault()
+    if ($(e.target).hasClass('disabled')) return
 
-        $.post( path, {} )
-            .done( function(dat) {
-                $('.undoCompleteBtn').addClass('disabled');
-                $('.completeProjectButton').addClass('disabled');
+    APP.confirm({
+      msg: 'Are you sure you want to set the whole project as completed? This action cannot canceled.',
+      callback: 'completeProjectConfirmed',
+    })
+  })
 
-                currentStatus = STATUS_COMPLETED ;
-                completionDate = new Date();
+  function reloadStatusFromServer() {
+    return $.get(
+      '/plugins/ebay/api/v1/projects/' +
+        config.id_project +
+        '/' +
+        config.password +
+        '/completion_status',
+    ).done(function (data) {
+      currentStatus = data.status
+      completionDate = data.completed_at
 
-                statusChanged() ;
-            }) ;
-    }
+      statusChanged()
+    })
+  }
 
-    UI.completeProjectConfirmed = completeProjectConfirmed ;
+  function loadChunkCompletionData() {
+    return $.get(
+      '/api/v2/projects/' +
+        config.id_project +
+        '/' +
+        config.password +
+        '/completion_status',
+    )
+  }
 
-    $(document).on('click', '.completeProjectButton', function(e) {
-        e.preventDefault();
-        if ( $(e.target).hasClass('disabled') ) return ;
+  loadChunkCompletionData().done(chunkDataLoaded).done(reloadStatusFromServer)
 
-        APP.confirm({
-            msg: 'Are you sure you want to set the whole project as completed? This action cannot canceled.',
-            callback: 'completeProjectConfirmed'
-        });
-    });
+  function activateUserCell(node, email) {
+    $(node).find('.stat-email ').text(email)
+    $(node).find('.ui.cancel.label').show()
+  }
 
-    function reloadStatusFromServer() {
-        return $.get('/plugins/ebay/api/v1/projects/' + config.id_project + '/' + config.password + '/completion_status' )
-            .done( function( data ) {
+  $.get(
+    sprintf(
+      '/api/app/dqf/projects/%s/%s/assignments',
+      config.id_project,
+      config.password,
+    ),
+    {},
+  ).done(function (data) {
+    $.each(data, function (index, element) {
+      var email, node
 
-                currentStatus = data.status ;
-                completionDate = data.completed_at ;
+      if (element.translate_user) {
+        email = element.translate_user.email
+        node = findDqfCell(element.id, element.password, 'translate')
+        activateUserCell(node, email)
+      }
 
-                statusChanged();
-            });
-    };
+      if (element.review_user) {
+        email = element.review_user.email
+        node = findDqfCell(element.id, element.password, 'revise')
+        activateUserCell(node, email)
+      }
+    })
+  })
 
-    function loadChunkCompletionData() {
-        return $.get('/api/v2/projects/' + config.id_project + '/' + config.password + '/completion_status' ) ;
-    }
+  function confirmRemoveAssignment(event) {
+    var jid = $(event.target).closest('tbody').data('jid')
+    var pwd = $(event.target).closest('tbody').data('pwd')
+    var what = $(event.target).closest('td').hasClass('stat-email-translate')
+      ? 'translate'
+      : 'revise'
+    var email = $(event.target).closest('td').text().trim()
 
-    loadChunkCompletionData()
-        .done( chunkDataLoaded )
-        .done( reloadStatusFromServer ) ;
+    removeAssignmentData = {jid: jid, pwd: pwd, what: what}
 
-    function activateUserCell(node, email) {
-        $(node).find('.stat-email ').text( email );
-        $(node).find('.ui.cancel.label').show();
-    }
+    APP.confirm({
+      cancelTxt: 'Cancel',
+      okTxt: 'Yes, remove assignment',
+      callback: 'dqfDeleteAssignment',
+      msg:
+        'Are you sure you want to remove DQF assignment to ' +
+        email +
+        ' for ' +
+        what +
+        ' on chunk ' +
+        jid +
+        ' and password ' +
+        pwd +
+        '?',
+    })
+  }
 
-    $.get( sprintf('/api/app/dqf/projects/%s/%s/assignments', config.id_project, config.password ), {})
-        .done( function( data ) {
-            $.each( data, function( index, element ) {
-                var email, node ;
-
-                if ( element.translate_user ) {
-                    email = element.translate_user.email ;
-                    node = findDqfCell( element.id, element.password, 'translate' ) ;
-                    activateUserCell(node, email);
-
-                }
-
-                if ( element.review_user ) {
-                    email = element.review_user.email ;
-                    node = findDqfCell( element.id, element.password, 'revise' ) ;
-                    activateUserCell(node, email) ;
-                }
-            });
-        });
-
-    function confirmRemoveAssignment(event) {
-        var jid  = $(event.target).closest('tbody').data('jid');
-        var pwd  = $(event.target).closest('tbody').data('pwd');
-        var what = $(event.target).closest('td').hasClass('stat-email-translate') ? 'translate' : 'revise' ;
-        var email = $(event.target).closest('td').text ().trim() ;
-
-        removeAssignmentData = { jid  : jid, pwd : pwd, what : what };
-
-        APP.confirm({
-            cancelTxt : 'Cancel',
-            okTxt : 'Yes, remove assignment',
-            callback : 'dqfDeleteAssignment',
-            msg : 'Are you sure you want to remove DQF assignment to ' + email + ' for ' + what + ' on chunk ' + jid + ' and password ' + pwd + '?'
-        });
-    }
-
-    $('.stat-email-translate .cancel, .stat-email-revise .cancel').on('click', confirmRemoveAssignment) ;
-
-});
+  $('.stat-email-translate .cancel, .stat-email-revise .cancel').on(
+    'click',
+    confirmRemoveAssignment,
+  )
+})
 
 function createDqfProject() {
-    if ( $('#createIntermediateProjectButton').hasClass('disabled') ) {
-        return ;
-    }
+  if ($('#createIntermediateProjectButton').hasClass('disabled')) {
+    return
+  }
 
-    $('.dqf-info .loader').show();
+  $('.dqf-info .loader').show()
 
-    $('#createIntermediateProjectButton').addClass('disabled');
+  $('#createIntermediateProjectButton').addClass('disabled')
 
-    return $.post('/plugins/ebay/api/app/projects/' + config.id_project + '/' + config.password + '/dqf_intermediate_project' )
-        .done( function(data) {
-            window.location.href = window.location.href ;
-            console.log( data ) ;
-        })
-        .error( function(data) {
-            console.error( data ) ;
-        });
+  return $.post(
+    '/plugins/ebay/api/app/projects/' +
+      config.id_project +
+      '/' +
+      config.password +
+      '/dqf_intermediate_project',
+  )
+    .done(function (data) {
+      window.location.href = window.location.href
+      console.log(data)
+    })
+    .error(function (data) {
+      console.error(data)
+    })
 }
