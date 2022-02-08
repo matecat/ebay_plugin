@@ -87,7 +87,7 @@ if (ReviewImproved.enabled())
         window.dispatchEvent(new Event('resize'))
       },
 
-      deleteIssue: function (issue, sid, dontShowMessage) {
+      deleteIssue: function (issue, sid) {
         var message = ''
         if (issue.target_text) {
           message = sprintf(
@@ -102,25 +102,13 @@ if (ReviewImproved.enabled())
             moment(issue.created_at).format('lll'),
           )
         }
-        if (!dontShowMessage) {
-          APP.confirm({
-            name: 'Confirm issue deletion',
-            callback: 'deleteTranslationIssue',
-            msg: message,
-            okTxt: 'Yes delete this issue',
-            context: JSON.stringify({
-              id_segment: sid,
-              id_issue: issue.id,
-            }),
-          })
-        } else {
-          UI.deleteTranslationIssue(
-            JSON.stringify({
-              id_segment: sid,
-              id_issue: issue.id,
-            }),
-          )
-        }
+
+        ModalWindow.showModalComponent(ConfirmMessageModal, {
+          successText: 'Yes delete this issue',
+          successCallback: () => UI.deleteTranslationIssue(sid, issue.id),
+          text: message,
+          cancelText: 'Cancel',
+        })
       },
       showFixedAndRebuttedButtons(status) {
         status = status.toLowerCase()
