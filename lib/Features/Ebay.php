@@ -234,6 +234,7 @@ class Ebay extends BaseFeature {
      * TODO: this code needs to be refactored, does not works for multiple language jobs
      */
     public function beforeTMAnalysisCloseProject( $project ) {
+        return;
         $db = \Database::obtain()->getConnection() ;
 
         $sql_project_id = 'SELECT id FROM jobs WHERE id_project = ?';
