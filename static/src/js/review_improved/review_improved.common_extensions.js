@@ -43,15 +43,19 @@ if (ReviewImproved.enabled())
       },
 
       getSegmentVersionsIssuesHandler: function (e, data) {
-        // TODO Uniform behavior of ReviewExtended and ReviewImproved
-        var segment = SegmentStore.getSegmentByIdToJS(data.segmentId)
-        setTimeout(() =>
-          SegmentActions.addTranslationIssuesToSegment(
-            segment.id_file,
-            segment.original_sid,
-            [],
-          ),
+        var versions_path = sprintf(
+          '/api/v2/jobs/%s/%s/segments/%s/translation-versions',
+          config.id_job,
+          config.password,
+          data.segmentId,
         )
+
+        $.getJSON(versions_path).done(UI.updateLocalTranslationVersions)
+      },
+      updateLocalTranslationVersions: function (data) {
+        $(data.versions).each(function () {
+          MateCat.db.upsert('segment_versions', 'id', this)
+        })
       },
       submitComment: function (id_segment, id_issue, data) {
         return ReviewImproved.submitComment(id_segment, id_issue, data)
