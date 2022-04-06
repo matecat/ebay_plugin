@@ -17,15 +17,15 @@ class SegmentTranslationModel extends ReviewExtended\SegmentTranslationModel {
      * @throws \Exception
      */
     public function recountPenaltyPoints() {
-        $penaltyPoints                      = ChunkReviewDao::getPenaltyPointsForChunk( $this->_chunk );
-        $this->_chunkReviews[0]->penalty_points = $penaltyPoints;
+        $penaltyPoints                            = ChunkReviewDao::getPenaltyPointsForChunk( $this->_chunk );
+        $this->_chunkReviews[ 0 ]->penalty_points = $penaltyPoints;
 
-        $chunk_review_model = new ChunkReviewModel( $this->_chunkReviews[0] );
+        $chunk_review_model = new ChunkReviewModel( $this->_chunkReviews[ 0 ] );
         $chunk_review_model->updatePassFailResult( $this->_project );
     }
 
     protected function _deleteIssues( $source_page ) {
-        usleep(1);
+        usleep( 1 );
     }
 
 }

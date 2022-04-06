@@ -11,8 +11,8 @@ namespace Features\Ebay\Controller;
 use Files_FileDao;
 use Klein\Request;
 use Klein\Response;
-use ZipArchiveExtended;
 use ZipArchive;
+use ZipArchiveExtended;
 
 class ReferenceFilesController {
 
@@ -30,7 +30,7 @@ class ReferenceFilesController {
         $this->request  = $request;
         $this->response = $response;
         $this->service  = $service;
-        $this->app = $app;
+        $this->app      = $app;
 
         $this->findProject();
     }

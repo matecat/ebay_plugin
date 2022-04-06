@@ -9,11 +9,11 @@
 
 return [
         [
-            'FEATURE_CODE' => 'ebay',
-            'PLUGIN_CLASS' => '\\Features\\Ebay',
+                'FEATURE_CODE' => 'ebay',
+                'PLUGIN_CLASS' => '\\Features\\Ebay',
         ],
         [
-            'FEATURE_CODE' => 'review_improved',
-            'PLUGIN_CLASS' => '\\Features\\ReviewImproved',
+                'FEATURE_CODE' => 'review_improved',
+                'PLUGIN_CLASS' => '\\Features\\ReviewImproved',
         ]
 ];

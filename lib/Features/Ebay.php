@@ -10,8 +10,10 @@ namespace Features;
 
 use API\V2\Validators\SegmentTranslationIssueValidator;
 use Chunks_ChunkStruct;
-use controller;
 use Constants_TranslationStatus;
+use controller;
+use createProjectController;
+use DateTime;
 use Exception;
 use Features;
 use Features\Dqf\Model\ExtendedTranslationStruct;
@@ -23,8 +25,14 @@ use Features\ReviewExtended\Model\QualityReportModel;
 use Features\TranslationVersions\Model\TranslationVersionDao;
 use FilesStorage\AbstractFilesStorage;
 use Klein\Klein;
+use MyMemory;
+use NewController;
+use PDO;
+use Projects_MetadataDao;
 use Projects_ProjectStruct;
-use Features\ReviewImproved ;
+use Translations_SegmentTranslationDao;
+use Utils;
+use WorkerClient;
 
 class Ebay extends BaseFeature {
 
@@ -38,19 +46,19 @@ class Ebay extends BaseFeature {
             Features::PROJECT_COMPLETION,
             Features::TRANSLATION_VERSIONS,
             ReviewImproved::FEATURE_CODE
-    ] ;
+    ];
 
     const PROJECT_COMPLETION_METADATA_KEY = 'ebay_project_completed_at';
 
-    const PROJECT_TYPE_MT = 'MT' ;
-    const PROJECT_TYPE_HT = 'HT' ;
+    const PROJECT_TYPE_MT = 'MT';
+    const PROJECT_TYPE_HT = 'HT';
 
     public function postProjectCreate( $projectStructure ) {
-        $projectStructure[ 'result' ][ 'analyze_url' ] = Routes::analyze( array(
+        $projectStructure[ 'result' ][ 'analyze_url' ] = Routes::analyze( [
                 'project_name' => $projectStructure[ 'project_name' ],
                 'id_project'   => $projectStructure[ 'result' ][ 'id_project' ],
                 'password'     => $projectStructure[ 'result' ][ 'ppassword' ]
-        ) );
+        ] );
     }
 
     /**
@@ -62,22 +70,22 @@ class Ebay extends BaseFeature {
      * and the project creation crashes because of a duplicate call to \AbstractRevisionFeature::postProjectCreate
      * and a duplicate insert on qa_chunk_reviews is performed breaking database index integrity.
      *
-     * @see ReviewExtended::filterCreateProjectFeatures
-     *
      * @param array $projectFeatures
-     * @param $controller \NewController|\createProjectController
+     * @param       $controller NewController|createProjectController
      *
      * @return mixed
+     * @see ReviewExtended::filterCreateProjectFeatures
+     *
      */
-    public function filterOverrideReviewExtended( $projectFeatures, $controller ){
-        if( $projectFeatures[ ReviewExtended::FEATURE_CODE ] ){
+    public function filterOverrideReviewExtended( $projectFeatures, $controller ) {
+        if ( $projectFeatures[ ReviewExtended::FEATURE_CODE ] ) {
             unset( $projectFeatures[ ReviewExtended::FEATURE_CODE ] );
         }
 
         return $projectFeatures;
     }
 
-    public static function loadSegmentTranslationIssueValidator( SegmentTranslationIssueValidator $validator ){
+    public static function loadSegmentTranslationIssueValidator( SegmentTranslationIssueValidator $validator ) {
         return new ReviewImproved\Controller\API\V2\Validators\SegmentTranslationIssueValidator( $validator->getRequest() );
     }
 
@@ -97,15 +105,15 @@ class Ebay extends BaseFeature {
 
         $controllerName = get_class( $controller );
         if ( $controllerName == 'analyzeController' ) {
-            $project = $params['project'];
+            $project = $params[ 'project' ];
 
-            $route = Routes::analyze( array(
+            $route = Routes::analyze( [
                     'project_name' => $project->name,
                     'id_project'   => $project->id,
                     'password'     => $project->password,
-            ) );
+            ] );
 
-            header('Location: ' . $route);
+            header( 'Location: ' . $route );
             die();
         }
     }
@@ -118,47 +126,50 @@ class Ebay extends BaseFeature {
 
         $this->__setTranslation();
 
-        if ( ! $params['propagated_ids'] ) {
+        if ( !$params[ 'propagated_ids' ] ) {
             $this->__setPropagation();
         }
 
         SkippedSegments::updateSkippedSegmentsCount(
-            $params['chunk'],
-            $params['old_translation'],
-            $params['translation'],
-            $params['propagated_ids']
-        ) ;
+                $params[ 'chunk' ],
+                $params[ 'old_translation' ],
+                $params[ 'translation' ],
+                $params[ 'propagated_ids' ]
+        );
     }
 
     public function validateProjectCreation( $projectStructure ) {
         $this->__validateDueDate( $projectStructure );
 
-        $projectStructure[ 'metadata' ][ 'word_count_type' ] = \Projects_MetadataDao::WORD_COUNT_RAW;
+        $projectStructure[ 'metadata' ][ 'word_count_type' ] = Projects_MetadataDao::WORD_COUNT_RAW;
     }
 
     public function filterSetTranslationResult( $response, $params ) {
-        $response ['stats']  = array_merge( $response ['stats'], SkippedSegments::getDataForStats( $params['chunk'] ) );
-        return $response ;
+        $response [ 'stats' ] = array_merge( $response [ 'stats' ], SkippedSegments::getDataForStats( $params[ 'chunk' ] ) );
+
+        return $response;
     }
 
     public function filterStatsControllerResponse( $response, $params ) {
-        $response ['stats']  = array_merge( $response ['stats'], SkippedSegments::getDataForStats( $params['chunk'] ) );
-        return $response ;
+        $response [ 'stats' ] = array_merge( $response [ 'stats' ], SkippedSegments::getDataForStats( $params[ 'chunk' ] ) );
+
+        return $response;
     }
 
     public function filterIsChunkCompletionUndoable( $undoable, Projects_ProjectStruct $project, $chunk ) {
-        $model = new Features\Ebay\Model\ProjectCompletionStatusModel( $project ) ;
-        return $model->isChunkCompletionUndoable() ;
+        $model = new Features\Ebay\Model\ProjectCompletionStatusModel( $project );
+
+        return $model->isChunkCompletionUndoable();
     }
 
     private function __setTranslation() {
-        $count = \Translations_SegmentTranslationDao::updateEditDistanceForSetTranslation(
-                array(
+        $count = Translations_SegmentTranslationDao::updateEditDistanceForSetTranslation(
+                [
                         'id_segment'    => $this->translation[ 'id_segment' ],
                         'id_job'        => $this->translation[ 'id_job' ],
                         'segment_hash'  => $this->old_translation[ 'segment_hash' ],
                         'edit_distance' => $this->edit_distance
-                )
+                ]
         );
     }
 
@@ -166,12 +177,12 @@ class Ebay extends BaseFeature {
         if ( array_key_exists( 'due_date', $projectStructure[ 'metadata' ] ) ) {
 
             try {
-                new \DateTime( $projectStructure[ 'metadata' ][ 'due_date' ] );
+                new DateTime( $projectStructure[ 'metadata' ][ 'due_date' ] );
             } catch ( Exception $e ) {
-                if ( !array_key_exists('errors', $projectStructure[ 'result' ])) {
-                    $projectStructure[ 'result' ]['errors'] = array();
+                if ( !array_key_exists( 'errors', $projectStructure[ 'result' ] ) ) {
+                    $projectStructure[ 'result' ][ 'errors' ] = [];
                 }
-                $projectStructure[ 'result' ]['errors'][] = ['message' => "Due date is not valid"];
+                $projectStructure[ 'result' ][ 'errors' ][] = [ 'message' => "Due date is not valid" ];
             }
         }
     }
@@ -180,19 +191,19 @@ class Ebay extends BaseFeature {
      *
      */
     private function __setPropagation() {
-        $options    = array( 'persistent' => true );
+        $options    = [ 'persistent' => true ];
         $class_name = '\Features\Ebay\EditDistancePropagationWorker';
 
-        $data = array(
+        $data = [
                 'segment_hash'  => $this->old_translation[ 'segment_hash' ],
                 'id_segment'    => $this->translation[ 'id_segment' ],
                 'id_job'        => $this->translation[ 'id_job' ],
                 'edit_distance' => $this->edit_distance
-        );
+        ];
 
 
-        \WorkerClient::init(); // TODO: this should not be needed, to investigate.
-        \WorkerClient::enqueue( 'P2', $class_name, $data, $options );
+        WorkerClient::init(); // TODO: this should not be needed, to investigate.
+        WorkerClient::enqueue( 'P2', $class_name, $data, $options );
     }
 
     /**
@@ -202,9 +213,7 @@ class Ebay extends BaseFeature {
      * TODO: change this to static funciton, it's wrong to have instance methods
      * on this class because it's too generic and will likely to become polluted.
      *
-     * @param $translation
-     *
-     * @return int
+     * @return float
      */
     private function getEditDistance() {
         $original = null;
@@ -212,13 +221,13 @@ class Ebay extends BaseFeature {
         if ( intval( $this->old_translation[ 'version_number' ] ) == 0 ) {
             $original = $this->old_translation[ 'translation' ];
         } else {
-            $version0 = TranslationVersionDao::getVersionNumberForTranslation(
+            $version0 = ( new TranslationVersionDao )->getVersionNumberForTranslation(
                     $this->translation[ 'id_job' ], $this->translation[ 'id_segment' ], 0
             );
             $original = $version0->translation;
         }
 
-        $similarity    = \MyMemory::TMS_MATCH( $original, $this->translation[ 'translation' ] );
+        $similarity    = MyMemory::TMS_MATCH( $original, $this->translation[ 'translation' ] );
         $edit_distance = ( 1 - $similarity ) * 1000;
 
         return round( $edit_distance );
@@ -227,6 +236,7 @@ class Ebay extends BaseFeature {
     /**
      * If segment is marked as skipped, do no send contribution
      *
+     * @param $skip_set_contribution
      * @param $new_translation
      * @param $old_translation
      *
@@ -244,14 +254,14 @@ class Ebay extends BaseFeature {
      *
      */
     public function filter_project_manager_array_files( $files, $projectStructure ) {
-        $new_files = array() ;
+        $new_files = [];
         foreach ( $files as $file ) {
             if ( AbstractFilesStorage::pathinfo_fix( $file, PATHINFO_EXTENSION ) != 'g' ) {
-                $new_files[] = $file ;
+                $new_files[] = $file;
             }
         }
 
-        return $new_files   ;
+        return $new_files;
     }
 
     /**
@@ -264,7 +274,7 @@ class Ebay extends BaseFeature {
      * @return string
      */
     public function filter_status_for_pretranslated_segments( $status, $projectStructure ) {
-        if ( $projectStructure[ 'metadata' ][ 'project_type' ] == self::PROJECT_TYPE_MT  ) {
+        if ( $projectStructure[ 'metadata' ][ 'project_type' ] == self::PROJECT_TYPE_MT ) {
             $status = Constants_TranslationStatus::STATUS_DRAFT;
         }
 
@@ -272,38 +282,38 @@ class Ebay extends BaseFeature {
     }
 
     public static function loadRoutes( Klein $klein ) {
-        $klein->respond( 'GET',  '/analyze/[:name]/[:id_project]-[:password]',              [__CLASS__, 'analyzeRoute'] );
-        $klein->respond( 'GET',  '/reference-files/[:id_project]/[:password]/[:zip_index]', [__CLASS__, 'referenceFilesRoute' ] );
-        $klein->respond( 'POST', '/projects/[:id_project]/[:password]/completion',          [__CLASS__, 'setProjectCompletedRoute' ] ) ;
-        $klein->respond( 'GET',  '/api/v1/projects/[:id_project]/[:password]/completion_status',        [__CLASS__, 'getCompletionRoute' ] ) ;
-        $klein->respond( 'POST', '/api/app/projects/[:id_project]/[:password]/dqf_intermediate_project', [__CLASS__, 'createIntermediateProject' ] ) ;
+        $klein->respond( 'GET', '/analyze/[:name]/[:id_project]-[:password]', [ __CLASS__, 'analyzeRoute' ] );
+        $klein->respond( 'GET', '/reference-files/[:id_project]/[:password]/[:zip_index]', [ __CLASS__, 'referenceFilesRoute' ] );
+        $klein->respond( 'POST', '/projects/[:id_project]/[:password]/completion', [ __CLASS__, 'setProjectCompletedRoute' ] );
+        $klein->respond( 'GET', '/api/v1/projects/[:id_project]/[:password]/completion_status', [ __CLASS__, 'getCompletionRoute' ] );
+        $klein->respond( 'POST', '/api/app/projects/[:id_project]/[:password]/dqf_intermediate_project', [ __CLASS__, 'createIntermediateProject' ] );
     }
 
-    public static function analyzeRoute($request, $response, $service, $app) {
+    public static function analyzeRoute( $request, $response, $service, $app ) {
         $controller    = new Ebay\Controller\AnalyzeController( $request, $response, $service, $app );
         $template_path = dirname( __FILE__ ) . '/Ebay/View/Html/analyze.html';
         $controller->setView( $template_path );
-        $controller->respond('');
+        $controller->respond( '' );
     }
 
-    public static function referenceFilesRoute($request, $response, $service, $app) {
-        $controller    = new Ebay\Controller\ReferenceFilesController( $request, $response, $service, $app );
+    public static function referenceFilesRoute( $request, $response, $service, $app ) {
+        $controller = new Ebay\Controller\ReferenceFilesController( $request, $response, $service, $app );
         $controller->downloadFile();
     }
 
     public static function setProjectCompletedRoute( $request, $response, $service, $app ) {
-        $controller = new Features\Ebay\Controller\ProjectCompletionController($request, $response, $service, $app );
-        $controller->respond('setCompletion') ;
+        $controller = new Features\Ebay\Controller\ProjectCompletionController( $request, $response, $service, $app );
+        $controller->respond( 'setCompletion' );
     }
 
     public static function getCompletionRoute( $request, $response, $server, $app ) {
-        $controller = new Features\Ebay\Controller\ProjectCompletionController($request, $response, $server, $app );
-        $controller->respond('getCompletion') ;
+        $controller = new Features\Ebay\Controller\ProjectCompletionController( $request, $response, $server, $app );
+        $controller->respond( 'getCompletion' );
     }
 
-    public static function createIntermediateProject($request, $response, $server, $app) {
-        $controller = new Features\Ebay\Controller\DqfIntermediateProjectController($request, $response, $server, $app);
-        $controller->respond('create') ;
+    public static function createIntermediateProject( $request, $response, $server, $app ) {
+        $controller = new Features\Ebay\Controller\DqfIntermediateProjectController( $request, $response, $server, $app );
+        $controller->respond( 'create' );
     }
 
     /**
@@ -314,7 +324,7 @@ class Ebay extends BaseFeature {
      * @return mixed
      */
     public function filterCreateProjectInputFilters( $inputFilter ) {
-        return array_merge( $inputFilter, Metadata::getInputFilter() ) ;
+        return array_merge( $inputFilter, Metadata::getInputFilter() );
     }
 
     /**
@@ -325,85 +335,86 @@ class Ebay extends BaseFeature {
      * @param $options
      *
      * @return array
+     * @throws Exception
      */
     public function createProjectAssignInputMetadata( $metadata, $options ) {
-        $options = \Utils::ensure_keys( $options, array('input'));
+        $options = Utils::ensure_keys( $options, [ 'input' ] );
 
-        $my_metadata = array_intersect_key( $options['input'], array_flip( Metadata::$keys ) ) ;
+        $my_metadata = array_intersect_key( $options[ 'input' ], array_flip( Metadata::$keys ) );
         $my_metadata = array_filter( $my_metadata ); // <-- remove all `empty` array elements
 
-        return  array_merge( $my_metadata, $metadata );
+        return array_merge( $my_metadata, $metadata );
     }
 
     /**
      * @param Chunks_ChunkStruct    $chunk
      * @param CompletionEventStruct $params
      * @param                       $lastId
+     *
+     * @throws Exception
      */
     public function project_completion_event_saved( Chunks_ChunkStruct $chunk, CompletionEventStruct $params, $lastId ) {
-        $project = $chunk->getProject() ;
+        $project = $chunk->getProject();
 
         // reload quality report and dump it to file
-        $quality_report = new QualityReportModel( $chunk ) ;
-        $structure = $quality_report->getStructure();
+        $quality_report = new QualityReportModel( $chunk );
+        $structure      = $quality_report->getStructure();
 
         $this->getLogger()->info( "ChunkCompletionEvent LASTID: $lastId" );
-        $this->getLogger()->info( json_encode( $params ) ) ;
-        $this->getLogger()->info( json_encode( $structure ) ) ;
+        $this->getLogger()->info( json_encode( $params ) );
+        $this->getLogger()->info( json_encode( $structure ) );
     }
 
     public function postJobMerged( $projectStructure ) {
         $id_job = $projectStructure[ 'job_to_merge' ];
-        $chunk = \Chunks_ChunkDao::getByJobID( $id_job ) [ 0 ] ;
-        SkippedSegments::postJobMerged( $chunk ) ;
+        $chunk  = \Chunks_ChunkDao::getByJobID( $id_job ) [ 0 ];
+        SkippedSegments::postJobMerged( $chunk );
 
     }
 
     public function postJobSplitted( $projectStructure ) {
-        SkippedSegments::postJobSplitted( $projectStructure['job_to_split'], $projectStructure['job_to_split_pass'] ) ;
+        SkippedSegments::postJobSplitted( $projectStructure[ 'job_to_split' ], $projectStructure[ 'job_to_split_pass' ] );
     }
 
     /**
      * Ebay customisation requires that identical source and target are considered identical
      */
-    public function filterIdenticalSourceAndTargetIsTranslated($originalValue, $projectStructure ) {
+    public function filterIdenticalSourceAndTargetIsTranslated( $originalValue, $projectStructure ) {
 
-        if ( !isset( $projectStructure['metadata']) && !isset( $projectStructure['metadata']['project_type'] )) {
-            throw new Exception( 'Expected project_type was not found' ) ;
+        if ( !isset( $projectStructure[ 'metadata' ] ) && !isset( $projectStructure[ 'metadata' ][ 'project_type' ] ) ) {
+            throw new Exception( 'Expected project_type was not found' );
         }
-        if ( $projectStructure['metadata']['project_type'] == self::PROJECT_TYPE_MT ) {
-            return true ;
-        }
-        else {
-            return $originalValue ;
+        if ( $projectStructure[ 'metadata' ][ 'project_type' ] == self::PROJECT_TYPE_MT ) {
+            return true;
+        } else {
+            return $originalValue;
         }
     }
 
-    public function filterDqfIntermediateProjectRequired($value) {
-        return true ;
+    public function filterDqfIntermediateProjectRequired( $value ) {
+        return true;
     }
 
     /**
      * Ebay projects are either MT or HT by default so we override MateCat's computation and provide an hardcoded value.
      *
-     * @param                           $name
+     * @param                           $data
      * @param ExtendedTranslationStruct $translationStruct
      * @param Chunks_ChunkStruct        $chunk
      *
      * @return mixed|string
      */
     public function filterDqfSegmentOriginAndMatchRate( $data, ExtendedTranslationStruct $translationStruct, Chunks_ChunkStruct $chunk ) {
-        $projectType = $chunk->getProject()->getMetadataValue('project_type') ;
+        $projectType = $chunk->getProject()->getMetadataValue( 'project_type' );
         if ( $projectType == 'MT' ) {
-            $data[ 'originName' ] = 'MT' ;
-            $data[ 'matchRate' ] = 100 ;
-        }
-        else  {
-            $data[ 'originName' ] = 'HT' ;
-            $data[ 'matchRate' ] = null ;
+            $data[ 'originName' ] = 'MT';
+            $data[ 'matchRate' ]  = 100;
+        } else {
+            $data[ 'originName' ] = 'HT';
+            $data[ 'matchRate' ]  = null;
         }
 
-        return $data ;
+        return $data;
     }
 
 }

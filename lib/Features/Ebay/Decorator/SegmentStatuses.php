@@ -19,11 +19,11 @@ class SegmentStatuses {
         $this->project = $project;
         $metadata      = $project->getMetadataAsKeyValue();
 
-        $this->project_type = $metadata['project_type'];
+        $this->project_type = $metadata[ 'project_type' ];
     }
 
     public function getLabelsMap() {
-        return array(
+        return [
                 Constants_TranslationStatus::STATUS_NEW        => $this->labelForNew(),
                 Constants_TranslationStatus::STATUS_DRAFT      => $this->labelForDraft(),
                 Constants_TranslationStatus::STATUS_TRANSLATED => $this->labelForTranslated(),
@@ -31,7 +31,7 @@ class SegmentStatuses {
                 Constants_TranslationStatus::STATUS_REJECTED   => 'Rejected',
                 Constants_TranslationStatus::STATUS_FIXED      => 'Fixed',
                 Constants_TranslationStatus::STATUS_REBUTTED   => 'Rebutted'
-        );
+        ];
     }
 
     /**
@@ -41,17 +41,17 @@ class SegmentStatuses {
      * @return array
      */
     public function getSearchableStatuses() {
-        $statuses = array();
-        $labels = $this->getLabelsMap();
+        $statuses = [];
+        $labels   = $this->getLabelsMap();
         foreach ( $labels as $value => $label ) {
-            if ($this->isMt() && $value == Constants_TranslationStatus::STATUS_NEW ) {
+            if ( $this->isMt() && $value == Constants_TranslationStatus::STATUS_NEW ) {
                 continue;
             }
 
-            $statuses[] = (object)array(
+            $statuses[] = (object)[
                     'value' => $value,
                     'label' => $label
-            );
+            ];
         }
 
         return $statuses;

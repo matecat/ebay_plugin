@@ -9,10 +9,9 @@
 
 namespace Features\Ebay\Controller;
 
+use Analysis_AnalysisModel;
 use BaseKleinViewController;
-use Features\Ebay\Decorator\AnalyzeDecorator ;
-
-use Analysis_AnalysisModel ;
+use Features\Ebay\Decorator\AnalyzeDecorator;
 use PHPTALWithAppend;
 
 class AnalyzeController extends BaseKleinViewController {
@@ -27,17 +26,17 @@ class AnalyzeController extends BaseKleinViewController {
      */
     protected $view;
 
-    protected $model ;
+    protected $model;
 
     protected $app;
 
     // TODO: refactor this controller to make it call the parent constructor
     // Calling bootstrap start here should not be necessary, since this extends a stateful controller
-    public function __construct( \Klein\Request $request, \Klein\Response $response, $service, $app) {
-        $this->request = $request;
+    public function __construct( \Klein\Request $request, \Klein\Response $response, $service, $app ) {
+        $this->request  = $request;
         $this->response = $response;
-        $this->service = $service;
-        $this->app = $app;
+        $this->service  = $service;
+        $this->app      = $app;
 
         $this->findProject();
 
@@ -49,44 +48,44 @@ class AnalyzeController extends BaseKleinViewController {
         $this->view = new PHPTALWithAppend( $template_name );
     }
 
-    public function respond($method) {
+    public function respond( $method ) {
 
-        $this->user = $this->currentUser() ;
+        $this->user = $this->currentUser();
 
         $decorator = new AnalyzeDecorator( $this->model );
-        $decorator->setUser( $this->user ) ;
+        $decorator->setUser( $this->user );
 
-        $this->setDefaultTemplateData() ;
+        $this->setDefaultTemplateData();
 
         $decorator->decorate( $this->view );
 
-        $this->project->getFeaturesSet()->run('decorateTemplate', $this->view, $this);
+        $this->project->getFeaturesSet()->run( 'decorateTemplate', $this->view, $this );
 
         $this->response->body( $this->view->execute() );
         $this->response->send();
     }
 
     public function getModel() {
-        return $this->model ;
+        return $this->model;
     }
 
     private function currentUser() {
         \Bootstrap::sessionStart();
         $user = null;
-        if ( !empty( $_SESSION['uid'] ) ) {
-            $user_dao = new \Users_UserDao( \Database::obtain());
-            $user = $user_dao->getByUid( $_SESSION['uid']);
+        if ( !empty( $_SESSION[ 'uid' ] ) ) {
+            $user_dao = new \Users_UserDao( \Database::obtain() );
+            $user     = $user_dao->getByUid( $_SESSION[ 'uid' ] );
         }
+
         return $user;
     }
 
     private function findProject() {
         $this->project = \Projects_ProjectDao::findByIdAndPassword(
-                $this->request->param('id_project'),
-            $this->request->param('password')
+                $this->request->param( 'id_project' ),
+                $this->request->param( 'password' )
         );
     }
-
 
 
 }

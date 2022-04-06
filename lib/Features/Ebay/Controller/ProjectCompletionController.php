@@ -18,7 +18,7 @@ class ProjectCompletionController extends KleinController {
     /**
      * @var Projects_ProjectStruct
      */
-    protected $project ;
+    protected $project;
 
     protected function afterConstruct() {
         parent::afterConstruct();
@@ -27,24 +27,23 @@ class ProjectCompletionController extends KleinController {
     }
 
     public function getCompletion() {
-        $model = new ProjectCompletionStatusModel( $this->project ) ;
+        $model  = new ProjectCompletionStatusModel( $this->project );
         $status = $model->getCurrentStaus();
 
         $this->response->json( [
-                'status'       => $status['status'],
-                'completed_at' => $status['completed_at']
+                'status'       => $status[ 'status' ],
+                'completed_at' => $status[ 'completed_at' ]
         ] );
     }
 
     public function setCompletion() {
-        $model = new ProjectCompletionStatusModel( $this->project ) ;
+        $model = new ProjectCompletionStatusModel( $this->project );
 
         if ( $model->isCompletable() ) {
             $this->project->setMetadata( 'ebay_project_completed_at', time() );
-            $this->response->code( 200 ) ;
-        }
-        else {
-            $this->response->code( 400 ) ;
+            $this->response->code( 200 );
+        } else {
+            $this->response->code( 400 );
         }
 
     }

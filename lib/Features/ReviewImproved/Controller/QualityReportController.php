@@ -8,20 +8,23 @@
 
 namespace Features\ReviewImproved\Controller;
 
+use Chunks_ChunkDao;
+use Chunks_ChunkStruct;
 use Exceptions\NotFoundException;
 use Features;
 use Features\ReviewExtended\Model\QualityReportModel;
 use Features\ReviewImproved\Decorator\QualityReportDecorator;
+use Jobs_JobStruct;
 
 class QualityReportController extends \BaseKleinViewController {
 
     /**
-     * @var \Jobs_JobStruct
+     * @var Jobs_JobStruct
      */
     private $job;
 
     /**
-     * @var \Chunks_ChunkStruct
+     * @var Chunks_ChunkStruct
      */
     private $chunk;
     /**
@@ -29,7 +32,7 @@ class QualityReportController extends \BaseKleinViewController {
      */
     private $model;
 
-    public function respond($method) {
+    public function respond( $method ) {
 
         $this->performValidations();
 
@@ -53,7 +56,7 @@ class QualityReportController extends \BaseKleinViewController {
     }
 
     private function downloadURI() {
-        list( $uri, $query ) = explode( '?', $this->request->uri() );
+        [ $uri, ] = explode( '?', $this->request->uri() );
 
         return $uri . '?download=1';
     }
@@ -78,23 +81,23 @@ class QualityReportController extends \BaseKleinViewController {
     }
 
     /**
-     * @return \Chunks_ChunkStruct
+     * @return Chunks_ChunkStruct
      * @throws NotFoundException
      */
     private function findChunk() {
-        $this->chunk = \Chunks_ChunkDao::getByIdAndPassword(
+        $this->chunk = Chunks_ChunkDao::getByIdAndPassword(
                 $this->request->param( 'id_job' ),
                 $this->request->param( 'password' )
         );
 
-        $this->featureSet->loadForProject( $this->chunk->getProject() ) ;
+        $this->featureSet->loadForProject( $this->chunk->getProject() );
 
         if ( !$this->chunk ) {
             throw new NotFoundException();
         }
 
         // TODO: check this condition is necessary, this controller should only be used by an instance of AbstractRevisionFeature
-        if ( ! $this->featureSet->hasRevisionFeature() ) {
+        if ( !$this->featureSet->hasRevisionFeature() ) {
             throw new NotFoundException();
         }
 
