@@ -4,6 +4,7 @@ namespace Features;
 
 use Chunks_ChunkStruct;
 use Features\ReviewImproved\Controller\QualityReportController;
+use Klein\Klein;
 use LQA\ChunkReviewDao;
 use Projects_ProjectDao;
 use RevisionFactory;
@@ -51,9 +52,9 @@ class ReviewImproved extends AbstractRevisionFeature {
     /**
      * Install routes for this plugin
      *
-     * @param \Klein\Klein $klein
+     * @param Klein $klein
      */
-    public static function loadRoutes( \Klein\Klein $klein ) {
+    public static function loadRoutes( Klein $klein ) {
         $klein->respond( 'GET', '/quality_report/[:id_job]/[:password]', [ __CLASS__, 'callbackQualityReport' ] );
         $klein->respond( 'GET', '/quality_report/[:id_job]/[:password]/versions/[:version]', [ __CLASS__, 'callbackQualityReport' ] );
     }
