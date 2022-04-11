@@ -21,7 +21,7 @@ class SegmentTranslationModel extends ReviewExtended\SegmentTranslationModel {
         $this->_chunkReviews[ 0 ]->penalty_points = $penaltyPoints;
 
         $chunk_review_model = new ChunkReviewModel( $this->_chunkReviews[ 0 ] );
-        $chunk_review_model->updatePassFailResult( $this->_project );
+        $chunk_review_model->_updatePassFailResult( $this->_project );
     }
 
     protected function _deleteIssues( $source_page ) {

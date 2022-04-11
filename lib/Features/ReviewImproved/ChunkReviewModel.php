@@ -28,7 +28,7 @@ class ChunkReviewModel extends \Features\ReviewExtended\ChunkReviewModel {
         $this->chunk_review->reviewed_words_count =
                 ChunkReviewDao::getReviewedWordsCountForChunk( $this->chunk );
 
-        $this->updatePassFailResult( $project );
+        $this->_updatePassFailResult( $project );
     }
 
 }
