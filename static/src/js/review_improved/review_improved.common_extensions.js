@@ -1,5 +1,6 @@
 import {sprintf} from 'sprintf-js'
 import moment from 'moment'
+import ModalsActions from '../../../../../../public/js/cat_source/es6/actions/ModalsActions'
 
 if (ReviewImproved.enabled())
   (function ($, ReviewImproved) {
@@ -107,7 +108,7 @@ if (ReviewImproved.enabled())
           )
         }
 
-        ModalWindow.showModalComponent(ConfirmMessageModal, {
+        ModalsActions.showModalComponent(ConfirmMessageModal, {
           successText: 'Yes delete this issue',
           successCallback: () => UI.deleteTranslationIssue(sid, issue.id),
           text: message,
