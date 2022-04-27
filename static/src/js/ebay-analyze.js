@@ -1,6 +1,5 @@
 import {sprintf} from 'sprintf-js'
 import moment from 'moment'
-import ModalsActions from '../../../../../public/js/cat_source/es6/actions/ModalsActions'
 
 var removeAssignmentData
 
