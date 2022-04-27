@@ -1,6 +1,6 @@
 import {sprintf} from 'sprintf-js'
 import moment from 'moment'
-import ModalsActions from '../../../../../../public/js/cat_source/es6/actions/ModalsActions'
+import {createRoot} from 'react-dom/client'
 
 if (ReviewImproved.enabled())
   (function ($, ReviewImproved) {
@@ -13,14 +13,13 @@ if (ReviewImproved.enabled())
 
     $.extend(UI, {
       mountPanelComponent: function () {
-        UI.issuesMountPoint = $('[data-mount=review-side-panel]')[0]
-        ReactDOM.render(
+        const mountPoint = createRoot($('[data-mount=review-side-panel]')[0])
+        mountPoint.render(
           React.createElement(ReviewSidePanel, {
             closePanel: this.closeIssuesPanel,
             reviewType: Review.type,
             isReview: config.isReview,
           }),
-          UI.issuesMountPoint,
         )
       },
       /**
