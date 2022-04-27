@@ -28,6 +28,6 @@
     "grunt-cli": "^1.4.2",
     "handlebars": ">=4.7.7",
     "kind-of": ">=6.0.3",
-    "minimist": ">=0.2.1"
+    "minimist": ">=1.2.6"
   }
 }
