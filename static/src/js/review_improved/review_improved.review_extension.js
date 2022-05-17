@@ -45,7 +45,7 @@ if (ReviewImproved.enabled() && config.isReview) {
           )
           MateCat.db.segment_translation_issues.remove(record)
           ReviewImproved.reloadQualityReport()
-          UI.reloadQualityReport()
+          CatToolActions.reloadQualityReport()
         })
       },
       // createButtons: function(segment) {

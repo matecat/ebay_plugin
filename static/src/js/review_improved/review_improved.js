@@ -11,118 +11,118 @@
  * For translate page, review specific statuses are not offered.
  *
  */
-import _ from 'lodash';
 import {sprintf} from 'sprintf-js'
 
-window.ReviewImproved = window.ReviewImproved || {};
+window.ReviewImproved = window.ReviewImproved || {}
 
-ReviewImproved.enabled = function() {
-    return Review.type === 'improved';
-};
+ReviewImproved.enabled = function () {
+  return Review.type === 'improved'
+}
 
-if ( ReviewImproved.enabled() )
-(function($, ReviewImproved) {
+if (ReviewImproved.enabled())
+  (function ($, ReviewImproved) {
+    $.extend(ReviewImproved, {
+      highlightIssue: function (issue, node) {
+        var selection = document.getSelection()
+        selection.removeAllRanges()
 
+        var range = document.createRange()
 
+        /**
+         * The following two lines are necessary to avoid Rangy span to get in the way when
+         * we want to highlight text.
+         * The first line removes rangy tags, while the second line via `normalize()`
+         * rejoins text nodes that may have become splitted due to rangy span insertion.
+         */
+        node[0].normalize()
 
-    $.extend( ReviewImproved, {
+        var contents = node.contents()
+        range.setStart(contents[issue.start_node], issue.start_offset)
+        range.setEnd(contents[issue.end_node], issue.end_offset)
 
-        highlightIssue : function(issue, node) {
-            var selection = document.getSelection();
-            selection.removeAllRanges();
+        selection.addRange(range)
+      },
 
-            var range = document.createRange();
+      loadComments: function (id_segment, id_issue) {
+        var issue_comments = sprintf(
+          '/api/v2/jobs/%s/%s/segments/%s/translation-issues/%s/comments',
+          config.id_job,
+          config.password,
+          id_segment,
+          id_issue,
+        )
 
-            /**
-             * The following two lines are necessary to avoid Rangy span to get in the way when
-             * we want to highlight text.
-             * The first line removes rangy tags, while the second line via `normalize()`
-             * rejoins text nodes that may have become splitted due to rangy span insertion.
-             */
-            node[0].normalize();
+        $.getJSON(issue_comments).done(function (data) {
+          $.each(data.comments, function () {
+            MateCat.db.upsert('segment_translation_issue_comments', 'id', this)
+          })
+        })
+      },
+      submitComment: function (id_segment, id_issue, data) {
+        return API.SEGMENT.sendSegmentVersionIssueComment(
+          id_segment,
+          id_issue,
+          data,
+        ).done(function (data) {
+          MateCat.db.segment_translation_issue_comments.insert(data.comment)
 
-            var contents = node.contents() ;
-            range.setStart( contents[ issue.start_node ], issue.start_offset );
-            range.setEnd( contents[ issue.end_node ], issue.end_offset );
+          if (data.issue) {
+            ReviewImproved.updateIssueRebutted(data.issue)
+          }
+        })
+      },
+      updateIssueRebutted: function (issue) {
+        MateCat.db.upsert('segment_translation_issues', 'id', issue)
+      },
+      undoRebutIssue: function (id_segment, id_issue) {
+        var issue_update_path = sprintf(
+          '/api/v2/jobs/%s/%s/segments/%s/translation-issues/%s',
+          config.id_job,
+          config.password,
+          id_segment,
+          id_issue,
+        )
 
-            selection.addRange( range );
-        },
+        return $.ajax({
+          url: issue_update_path,
+          type: 'POST',
+          data: {rebutted_at: null},
+        }).done(function (data) {
+          if (data.issue) {
+            ReviewImproved.updateIssueRebutted(data.issue)
+          }
+        })
+      },
 
-        loadComments : function(id_segment, id_issue) {
-            var issue_comments = sprintf(
-                '/api/v2/jobs/%s/%s/segments/%s/translation-issues/%s/comments',
-                config.id_job, config.password,
-                id_segment,
-                id_issue
-            );
-
-            $.getJSON(issue_comments).done(function(data) {
-                $.each( data.comments, function(  ) {
-                    MateCat.db.upsert('segment_translation_issue_comments', 'id', this );
-                });
-            });
-        },
-        submitComment : function(id_segment, id_issue, data) {
-            return API.SEGMENT.sendSegmentVersionIssueComment(id_segment, id_issue, data)
-                .done( function( data ) {
-                MateCat.db.segment_translation_issue_comments.insert ( data.comment );
-
-                if( data.issue ) {
-                    ReviewImproved.updateIssueRebutted( data.issue );
-                }
-           });
-        },
-        updateIssueRebutted : function ( issue ) {
-            MateCat.db.upsert('segment_translation_issues', 'id', issue );
-        },
-        undoRebutIssue : function ( id_segment, id_issue ) {
-            var issue_update_path = sprintf(
-                '/api/v2/jobs/%s/%s/segments/%s/translation-issues/%s',
-                config.id_job, config.password,
-                id_segment,
-                id_issue
-            );
-
-            return $.ajax({
-                url: issue_update_path,
-                type: 'POST',
-                data : { rebutted_at : null }
-            }).done( function( data ) {
-                if( data.issue ) {
-                    ReviewImproved.updateIssueRebutted( data.issue );
-                }
-            });
-        },
-
-        reloadQualityReport : function() {
-            UI.reloadQualityReport();
-        }
-    });
-})(jQuery, ReviewImproved);
-
+      reloadQualityReport: function () {
+        CatToolActions.reloadQualityReport()
+      },
+    })
+  })(jQuery, ReviewImproved)
 
 /**
  * Review page
  */
 
-if ( ReviewImproved.enabled() && config.isReview ) {
+if (ReviewImproved.enabled() && config.isReview) {
+  $.extend(ReviewImproved, {
+    submitIssue: function (sid, data_array) {
+      var path = sprintf(
+        '/api/v2/jobs/%s/%s/segments/%s/translation-issues',
+        config.id_job,
+        config.review_password,
+        sid,
+      )
 
-    $.extend(ReviewImproved, {
-        submitIssue : function(sid, data_array) {
-            var path  = sprintf('/api/v2/jobs/%s/%s/segments/%s/translation-issues',
-                  config.id_job, config.review_password, sid);
+      var deferreds = _.map(data_array, function (data) {
+        return $.post(path, data).done(function (data) {
+          MateCat.db.segment_translation_issues.insert(data.issue)
+        })
+      })
 
-            var deferreds = _.map( data_array, function( data ) {
-                return $.post( path, data )
-                .done(function( data ) {
-                    MateCat.db.segment_translation_issues.insert( data.issue ) ;
-                })
-            });
-
-            return $.when.apply($, deferreds).done(function() {
-                ReviewImproved.reloadQualityReport();
-            });
-        },
-
-    });
+      return $.when.apply($, deferreds).done(function () {
+        ReviewImproved.reloadQualityReport()
+      })
+    },
+  })
 }
