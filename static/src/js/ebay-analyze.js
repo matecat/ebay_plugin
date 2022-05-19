@@ -185,7 +185,7 @@ $(function () {
   $(document).on('click', '.completeProjectButton', function (e) {
     e.preventDefault()
     if ($(e.target).hasClass('disabled')) return
-    ModalWindow.showModalComponent(ConfirmMessageModal, {
+    ModalsActions.showModalComponent(ConfirmMessageModal, {
       text: 'Are you sure you want to set the whole project as completed? This action cannot canceled.',
       successText: 'Confirm',
       cancelText: 'Cancel',
@@ -259,7 +259,7 @@ $(function () {
     var email = $(event.target).closest('td').text().trim()
 
     removeAssignmentData = {jid: jid, pwd: pwd, what: what}
-    ModalWindow.showModalComponent(ConfirmMessageModal, {
+    ModalsActions.showModalComponent(ConfirmMessageModal, {
       successText: 'Yes, remove assignment',
       cancelText: 'Cancel',
       successCallback: () => UI.dqfDeleteAssignment(),

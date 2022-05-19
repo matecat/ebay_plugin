@@ -34,7 +34,19 @@ module.exports = function (grunt) {
           transform: [
             [
               'babelify',
-              {presets: ['@babel/preset-react', ['@babel/preset-env']]},
+              {
+                presets: [
+                  '@babel/preset-react',
+                  [
+                    '@babel/preset-env',
+                    {
+                      targets: {
+                        browsers: ['defaults', 'not ie 11', 'not ie_mob 11'],
+                      },
+                    },
+                  ],
+                ],
+              },
             ],
           ],
           browserifyOptions: {
@@ -51,7 +63,6 @@ module.exports = function (grunt) {
           'static/src/js/review_improved/review_improved.review_events.js',
           'static/src/js/components/review_improved/*.js',
           'static/src/js/components/*.js',
-
         ],
         dest: 'static/build/js/ebay-components.js',
       },
@@ -60,7 +71,19 @@ module.exports = function (grunt) {
           transform: [
             [
               'babelify',
-              {presets: ['@babel/preset-react', ['@babel/preset-env']]},
+              {
+                presets: [
+                  '@babel/preset-react',
+                  [
+                    '@babel/preset-env',
+                    {
+                      targets: {
+                        browsers: ['defaults', 'not ie 11', 'not ie_mob 11'],
+                      },
+                    },
+                  ],
+                ],
+              },
             ],
           ],
           browserifyOptions: {
@@ -75,7 +98,19 @@ module.exports = function (grunt) {
           transform: [
             [
               'babelify',
-              {presets: ['@babel/preset-react', ['@babel/preset-env']]},
+              {
+                presets: [
+                  '@babel/preset-react',
+                  [
+                    '@babel/preset-env',
+                    {
+                      targets: {
+                        browsers: ['defaults', 'not ie 11', 'not ie_mob 11'],
+                      },
+                    },
+                  ],
+                ],
+              },
             ],
           ],
           browserifyOptions: {
@@ -102,7 +137,6 @@ module.exports = function (grunt) {
         ],
         dest: 'static/build/js/ebay-lib.js',
       },
-
     },
     sass: {
       app: {
