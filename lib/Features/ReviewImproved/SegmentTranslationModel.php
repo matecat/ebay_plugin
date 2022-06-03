@@ -19,7 +19,6 @@ class SegmentTranslationModel extends ReviewExtended\SegmentTranslationModel {
     public function recountPenaltyPoints() {
         $penaltyPoints                            = ChunkReviewDao::getPenaltyPointsForChunk( $this->_chunk );
         $this->_chunkReviews[ 0 ]->penalty_points = $penaltyPoints;
-
         $chunk_review_model = new ChunkReviewModel( $this->_chunkReviews[ 0 ] );
         $chunk_review_model->_updatePassFailResult( $this->_project );
     }
