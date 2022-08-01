@@ -56,7 +56,7 @@ class QualityReportController extends \BaseKleinViewController {
     }
 
     private function downloadURI() {
-        [ $uri, ] = explode( '?', $this->request->uri() );
+        list( $uri, ) = explode( '?', $this->request->uri() );
 
         return $uri . '?download=1';
     }
