@@ -11,7 +11,7 @@ namespace Features\ReviewImproved;
 
 use LQA\EntryDao;
 
-class TranslationIssueModel extends \Features\ReviewExtended\TranslationIssueModel  {
+class TranslationIssueModel extends \Features\ReviewExtended\TranslationIssueModel {
 
     /**
      * Deletes the entry and subtracts penalty potins.
@@ -22,7 +22,7 @@ class TranslationIssueModel extends \Features\ReviewExtended\TranslationIssueMod
      */
 
     public function delete() {
-        EntryDao::deleteEntry($this->issue);
+        EntryDao::deleteEntry( $this->issue );
 
         if ( is_null( $this->issue->rebutted_at ) ) {
             $chunk_review_model = new ChunkReviewModel( $this->chunk_review );

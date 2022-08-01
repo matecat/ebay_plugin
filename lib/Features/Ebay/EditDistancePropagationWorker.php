@@ -7,10 +7,10 @@
  * Time: 12:17 PM
  */
 
-namespace Features\Ebay ;
+namespace Features\Ebay;
 
-use \TaskRunner\Commons\AbstractWorker;
 use TaskRunner\Commons\AbstractElement;
+use TaskRunner\Commons\AbstractWorker;
 use TaskRunner\Commons\QueueElement;
 use TaskRunner\Exceptions\EndQueueException;
 
@@ -21,7 +21,7 @@ class EditDistancePropagationWorker extends AbstractWorker {
         /**
          * @var $queueElement QueueElement
          */
-        $this->_checkForReQueueEnd($queueElement) ;
+        $this->_checkForReQueueEnd( $queueElement );
 
         $this->_checkDatabaseConnection();
 

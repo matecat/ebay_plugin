@@ -1,17 +1,18 @@
 <?php
 
-namespace Features ;
+namespace Features;
 
 use Chunks_ChunkStruct;
 use Features\ReviewImproved\Controller\QualityReportController;
+use Klein\Klein;
 use LQA\ChunkReviewDao;
 use Projects_ProjectDao;
 use RevisionFactory;
 
 class ReviewImproved extends AbstractRevisionFeature {
-    const FEATURE_CODE = 'review_improved' ;
+    const FEATURE_CODE = 'review_improved';
 
-    protected static $conflictingDependencies = [] ;
+    protected static $conflictingDependencies = [];
 
     /**
      * postJobSplitted
@@ -51,22 +52,23 @@ class ReviewImproved extends AbstractRevisionFeature {
     /**
      * Install routes for this plugin
      *
-     * @param \Klein\Klein $klein
+     * @param Klein $klein
      */
-    public static function loadRoutes( \Klein\Klein $klein ) {
-        $klein->respond('GET', '/quality_report/[:id_job]/[:password]',                    array(__CLASS__, 'callbackQualityReport')  );
-        $klein->respond('GET', '/quality_report/[:id_job]/[:password]/versions/[:version]', array(__CLASS__, 'callbackQualityReport')  );
+    public static function loadRoutes( Klein $klein ) {
+        $klein->respond( 'GET', '/quality_report/[:id_job]/[:password]', [ __CLASS__, 'callbackQualityReport' ] );
+        $klein->respond( 'GET', '/quality_report/[:id_job]/[:password]/versions/[:version]', [ __CLASS__, 'callbackQualityReport' ] );
     }
 
-    public static function callbackQualityReport($request, $response, $service, $app) {
-        $controller = new QualityReportController( $request, $response, $service, $app);
-        $template_path = dirname(__FILE__) . '/ReviewImproved/View/Html/quality_report.html' ;
+    public static function callbackQualityReport( $request, $response, $service, $app ) {
+        $controller    = new QualityReportController( $request, $response, $service, $app );
+        $template_path = dirname( __FILE__ ) . '/ReviewImproved/View/Html/quality_report.html';
         $controller->setView( $template_path );
-        $controller->respond('');
+        $controller->respond( '' );
     }
 
     /**
      * This method handles the incompatibility between ReviewImproved and ReviewExtended
+     *
      * @param $features
      *
      * @return mixed
@@ -74,6 +76,7 @@ class ReviewImproved extends AbstractRevisionFeature {
     public function filterFeaturesMerged( $features ) {
         unset( $features[ ReviewExtended::FEATURE_CODE ] );
         unset( $features[ SecondPassReview::FEATURE_CODE ] );
+
         return $features;
     }
 

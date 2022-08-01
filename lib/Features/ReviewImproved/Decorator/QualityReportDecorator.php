@@ -8,12 +8,13 @@
 
 namespace Features\ReviewImproved\Decorator;
 
-use Bootstrap;
+use Constants_TranslationStatus;
 use Features\Ebay\Utils\Routes;
 use Features\QaCheckBlacklist;
 use Features\QaCheckGlossary;
 use Features\ReviewExtended\Model\QualityReportModel;
 use INIT;
+use PHPTAL;
 
 
 class QualityReportDecorator extends \AbstractModelViewDecorator {
@@ -23,10 +24,10 @@ class QualityReportDecorator extends \AbstractModelViewDecorator {
      */
     protected $model;
 
-    private $download_uri ;
+    private $download_uri;
 
     public function __construct( QualityReportModel $model ) {
-        parent::__construct( $model ) ;
+        parent::__construct( $model );
     }
 
     public function setDownloadURI( $uri ) {
@@ -34,106 +35,105 @@ class QualityReportDecorator extends \AbstractModelViewDecorator {
     }
 
     /**
-     * @param $template \PHPTAL
+     * @param $template PHPTAL
      *
      * @return mixed|void
      */
     public function decorate( $template ) {
         $this->setTempalteVarsBefore( $template );
 
-        $template->current_date = strftime('%c', strtotime('now')) ;
+        $template->current_date = strftime( '%c', strtotime( 'now' ) );
 
         $template->basepath     = INIT::$BASEURL;
         $template->build_number = INIT::$BUILD_NUMBER;
 
-        $template->project = $this->model->getProject() ;
-        $template->job     = $this->model->getChunk()->getJob() ;
-        $template->chunk   = $this->model->getChunk() ;
-        $template->version_number = $this->model->getVersionNumber() ;
-        $template->is_pass = $this->model->isPass() ;
-        $template->score   = $this->model->getScore() ;
+        $template->project        = $this->model->getProject();
+        $template->job            = $this->model->getChunk()->getJob();
+        $template->chunk          = $this->model->getChunk();
+        $template->version_number = $this->model->getVersionNumber();
+        $template->is_pass        = $this->model->isPass();
+        $template->score          = $this->model->getScore();
 
-        $template->download_uri = $this->download_uri ;
+        $template->download_uri = $this->download_uri;
 
         $template->project_meta = array_merge(
-                array(
+                [
                         'vendor'             => '',
                         'reviewer'           => '',
                         'total_source_words' => ''
-                ),
+                ],
                 $this->model->getProject()->getMetadataAsKeyValue()
         );
 
-        $template->chunk_meta = array(
+        $template->chunk_meta = [
                 'percentage_reviewed' => '',
                 'pass_fail_string'    => '',
                 'score'               => ''
-        );
+        ];
 
         $template->translate_url = $this->getTranslateUrl();
 
-        if ($this->refererIsRevise() ) {
-            $template->back_label = 'Back to Revise' ;
-            $template->back_url = $this->getReviseUrl() ;
+        if ( $this->refererIsRevise() ) {
+            $template->back_label = 'Back to Revise';
+            $template->back_url   = $this->getReviseUrl();
         } else {
-            $template->back_label = 'Back to Translate' ;
-            $template->back_url = $this->getTranslateUrl() ;
+            $template->back_label = 'Back to Translate';
+            $template->back_url   = $this->getTranslateUrl();
         }
-        $template->append('footer_js', Routes::staticBuild('js/qa-report-improved.js') );
-        $template->append('css_resources', Routes::staticSrc('css/style.css') );
+        $template->append( 'footer_js', Routes::staticBuild( 'js/qa-report-improved.js' ) );
+        $template->append( 'css_resources', Routes::staticSrc( 'css/style.css' ) );
 
 
 
         $template->model = $this->model->getStructure();
 
-       foreach($this->model->getAllSegments() as $segment ) {
-           $segment['translate_url'] = $this->getTranslateUrl() . '#' . $segment['id'];
-           $segment['is_approved'] =  $segment['status'] == \Constants_TranslationStatus::STATUS_APPROVED;
-           $segment['is_rejected'] =  $segment['status'] == \Constants_TranslationStatus::STATUS_REJECTED;
-           $segment['is_translated'] =  !in_array($segment['status'], array(
-                   \Constants_TranslationStatus::STATUS_APPROVED,
-                    \Constants_TranslationStatus::STATUS_REJECTED
-           ));
+        foreach ( $this->model->getAllSegments() as $segment ) {
+            $segment[ 'translate_url' ] = $this->getTranslateUrl() . '#' . $segment[ 'id' ];
+            $segment[ 'is_approved' ]   = $segment[ 'status' ] == Constants_TranslationStatus::STATUS_APPROVED;
+            $segment[ 'is_rejected' ]   = $segment[ 'status' ] == Constants_TranslationStatus::STATUS_REJECTED;
+            $segment[ 'is_translated' ] = !in_array( $segment[ 'status' ], [
+                    Constants_TranslationStatus::STATUS_APPROVED,
+                    Constants_TranslationStatus::STATUS_REJECTED
+            ] );
 
-           if ( $segment['qa_checks'] ) {
-               foreach( $segment['qa_checks'] as $check ) {
-                   $check['human_scope'] = $this->humanizedScope( $check );
-                   $check['message'] = $this->humanizedWarningText( $check );
-               }
-           }
-       }
+            if ( $segment[ 'qa_checks' ] ) {
+                foreach ( $segment[ 'qa_checks' ] as $check ) {
+                    $check[ 'human_scope' ] = $this->humanizedScope( $check );
+                    $check[ 'message' ]     = $this->humanizedWarningText( $check );
+                }
+            }
+        }
 
-       $this->setTemplateVarsAfter( $template );
+        $this->setTemplateVarsAfter( $template );
     }
 
     public function getFilenameForDownload() {
         $filename = $this->model->getProject()->name .
-            "-" . $this->model->getChunk()->id .
-            ".html";
-        return $filename ;
+                "-" . $this->model->getChunk()->id .
+                ".html";
+
+        return $filename;
     }
 
     private function humanizedScope( $check ) {
-        if ( $check['scope'] == QaCheckGlossary::GLOSSARY_SCOPE ) {
+        if ( $check[ 'scope' ] == QaCheckGlossary::GLOSSARY_SCOPE ) {
             return 'Glossary';
-        }
-        elseif ( $check['scope'] == QaCheckBlacklist::BLACKLIST_SCOPE ) {
-            return 'Blacklist' ;
+        } elseif ( $check[ 'scope' ] == QaCheckBlacklist::BLACKLIST_SCOPE ) {
+            return 'Blacklist';
         }
     }
 
     private function humanizedWarningText( $check ) {
-        $data = json_decode($check['data'], true);
-        $message = '' ;
-        if ( $check['scope'] == QaCheckGlossary::GLOSSARY_SCOPE ) {
-            $source = $data['raw_segment'];
-            $target = $data['raw_translation'];
-            $message = sprintf( "term <i>\"%s\"</i> not found in translation.", $source);
+        $data    = json_decode( $check[ 'data' ], true );
+        $message = '';
+        if ( $check[ 'scope' ] == QaCheckGlossary::GLOSSARY_SCOPE ) {
+            $source  = $data[ 'raw_segment' ];
+            $target  = $data[ 'raw_translation' ];
+            $message = sprintf( "term <i>\"%s\"</i> not found in translation.", $source );
 
-        }
-        elseif ( $check['scope'] == QaCheckBlacklist::BLACKLIST_SCOPE ) {
-            $term = $data['match'];
-            $message = sprintf( "term <i>\"%s\"</i> found in translation.", $term);
+        } elseif ( $check[ 'scope' ] == QaCheckBlacklist::BLACKLIST_SCOPE ) {
+            $term    = $data[ 'match' ];
+            $message = sprintf( "term <i>\"%s\"</i> found in translation.", $term );
         }
 
         return $message;
@@ -141,11 +141,11 @@ class QualityReportDecorator extends \AbstractModelViewDecorator {
 
     private function getTranslateUrl() {
         return \Routes::translate(
-            $this->model->getProject()->name,
-            $this->model->getChunk()->id,
-            $this->model->getChunk()->password,
-            $this->model->getChunk()->source,
-            $this->model->getChunk()->target
+                $this->model->getProject()->name,
+                $this->model->getChunk()->id,
+                $this->model->getChunk()->password,
+                $this->model->getChunk()->source,
+                $this->model->getChunk()->target
         );
     }
 
@@ -155,28 +155,33 @@ class QualityReportDecorator extends \AbstractModelViewDecorator {
      * @return bool
      */
     private function refererIsRevise() {
-        if ( !isset( $_SERVER['HTTP_REFERER'] ) ) {
-            return FALSE ;
+
+        if ( !isset( $_SERVER[ 'HTTP_REFERER' ] ) ) {
+            return false;
         }
 
-        $chunk_review = $this->model->getChunkReview() ;
-        $path = parse_url( $_SERVER['HTTP_REFERER'], PHP_URL_PATH ) ;
-        preg_match_all('/.*\/(.*)/', $path, $matches);
+        $chunk_review = $this->model->getChunkReview();
+        $path         = parse_url( $_SERVER[ 'HTTP_REFERER' ], PHP_URL_PATH );
+        preg_match_all( '/.*\/(.*)/', $path, $matches );
         if ( count( $matches ) == 2 ) {
-            list( $id, $password ) = explode('-', $matches[1][0] ) ;
-            return $id == $chunk_review->id_job && $password == $chunk_review->review_password  ;
+            $result = explode( '-', $matches[ 1 ][ 0 ] );
+            $id = isset( $result[ 0 ] ) ? $result[ 0 ] : null;
+            $password = isset( $result[ 1 ] ) ? $result[ 1 ] : null;
+            return $id == $chunk_review->id_job && $password == $chunk_review->review_password;
         }
-        return FALSE ;
+
+        return false;
+
     }
 
     private function getReviseUrl() {
         return \Routes::revise(
-            $this->model->getProject()->name,
-            $this->model->getChunk()->id,
-            $this->model->getChunkReview()->review_password,
-            $this->model->getChunk()->source,
-            $this->model->getChunk()->target
-        ) ;
+                $this->model->getProject()->name,
+                $this->model->getChunk()->id,
+                $this->model->getChunkReview()->review_password,
+                $this->model->getChunk()->source,
+                $this->model->getChunk()->target
+        );
     }
 
 }

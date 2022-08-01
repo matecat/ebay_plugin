@@ -23,9 +23,11 @@ use FilesStorage\FilesStorageFactory;
 use FilesStorage\S3FilesStorage;
 use INIT;
 use Langs_LanguageDomains;
-use SimpleS3\Client;
+use Log;
+use Projects_ProjectStruct;
 use Users_UserStruct;
 use Utils;
+use ZipArchive;
 use ZipArchiveExtended;
 
 
@@ -37,7 +39,7 @@ class AnalyzeDecorator extends AbstractModelViewDecorator {
     protected $model;
 
     /**
-     * @var \Projects_ProjectStruct
+     * @var Projects_ProjectStruct
      */
     protected $project;
 
@@ -112,8 +114,9 @@ class AnalyzeDecorator extends AbstractModelViewDecorator {
         if ( $this->project->hasFeature( Dqf::FEATURE_CODE ) ) {
             $this->__decorateForDqf( $template );
         }
-        $template->append('footer_js', Routes::staticBuild('js/analyze_old.js') );
-        $template->append('css_resources', Routes::staticSrc('css/analyze_old.css') );
+        $template->append( 'footer_js', Routes::staticBuild( 'js/analyze_old.js' ) );
+        $template->append( 'footer_js', Routes::staticSrc( 'js/ebay-analyze.js' ) );
+        $template->append( 'css_resources', Routes::staticSrc( 'css/analyze_old.css' ) );
 
         $this->setTemplateVarsAfter( $template );
     }
@@ -136,66 +139,71 @@ class AnalyzeDecorator extends AbstractModelViewDecorator {
     }
 
     private function getProjectData() {
-        // TODO: this should be moved to a specifi model
+
         $metadata = $this->model->getProject()->getMetadataAsKeyValue();
         $date     = null;
 
-        if ( $metadata[ 'due_date' ] != null ) {
+        if ( isset( $metadata[ 'due_date' ] ) ) {
             $date = new DateTime( $metadata[ 'due_date' ] );
             $date = $date->format( 'Y-m-d H:i:s' );
         }
 
         return [
                 'instructions'                             => $this->getInstructions(),
-                'file_name'                                => $metadata[ 'file_name' ],
+                'file_name'                                => isset( $metadata[ 'file_name' ] ) ? $metadata[ 'file_name' ] : null,
                 'due_date'                                 => $date,
-                'word_count'                               => $metadata[ 'word_count' ],
-                'project_completion_timestamp'             => $metadata[ Ebay::PROJECT_COMPLETION_METADATA_KEY ],
-                'dqf_review_settings_id'                   => $metadata[ 'dqf_review_settings_id' ],
-                'dqf_source_segments_submitted'            => $metadata[ 'dqf_source_segments_submitted' ],
-                'dqf_master_project_creation_completed_at' => $metadata[ 'dqf_master_project_creation_completed_at' ]
+                'word_count'                               => isset( $metadata[ 'word_count' ] ) ? $metadata[ 'word_count' ] : null,
+                'project_completion_timestamp'             => isset( $metadata[ Ebay::PROJECT_COMPLETION_METADATA_KEY ] ) ? $metadata[ Ebay::PROJECT_COMPLETION_METADATA_KEY ] : null,
+                'dqf_review_settings_id'                   => isset( $metadata[ 'dqf_review_settings_id' ] ) ? $metadata[ 'dqf_review_settings_id' ] : null,
+                'dqf_source_segments_submitted'            => isset( $metadata[ 'dqf_source_segments_submitted' ] ) ? $metadata[ 'dqf_source_segments_submitted' ] : null,
+                'dqf_master_project_creation_completed_at' => isset( $metadata[ 'dqf_master_project_creation_completed_at' ] ) ? $metadata[ 'dqf_master_project_creation_completed_at' ] : null,
         ];
     }
 
     private function getInstructions() {
+
         $files = Files_FileDao::getByProjectId( $this->project->id );
 
         $fs = FilesStorageFactory::create();
 
         list( $zip_filename ) = explode( ZipArchiveExtended::INTERNAL_SEPARATOR, $files[ 0 ]->filename );
 
-        $zip_path = $fs->getOriginalZipPath(
-                $this->project->create_date,
-                $this->project->id,
-                $zip_filename );
+        if ( AbstractFilesStorage::pathinfo_fix( $zip_filename )[ 'extension' ] == "zip" ) {
 
-        if ( AbstractFilesStorage::isOnS3() ) {
+            $zip_path = $fs->getOriginalZipPath(
+                    $this->project->create_date,
+                    $this->project->id,
+                    $zip_filename );
 
-            try {
-                $filePath = tempnam( '/tmp', 'ebay_' );
-                /** @var $s3Client Client */
-                $s3Client            = S3FilesStorage::getStaticS3Client();
-                $params[ 'bucket' ]  = \INIT::$AWS_STORAGE_BASE_BUCKET;
-                $params[ 'key' ]     = $zip_path;
-                $params[ 'save_as' ] = $filePath;
-                $s3Client->downloadItem( $params );
-            } catch ( Exception $ignored ) {
+            if ( AbstractFilesStorage::isOnS3() ) {
+
+                try {
+                    $filePath            = tempnam( '/tmp', 'ebay_' );
+                    $s3Client            = S3FilesStorage::getStaticS3Client();
+                    $params[ 'bucket' ]  = INIT::$AWS_STORAGE_BASE_BUCKET;
+                    $params[ 'key' ]     = $zip_path;
+                    $params[ 'save_as' ] = $filePath;
+                    $s3Client->downloadItem( $params );
+                } catch ( Exception $ignored ) {
+                    Log::doJsonLog( [ $ignored->getMessage(), $ignored ] );
+                }
+
+                $zip_path = $filePath;
+
             }
 
-            $zip_path = $filePath;
+            $zip = new ZipArchive();
+            $zip->open( $zip_path );
+
+            $content = $zip->getFromName( '__meta/instructions.txt' );
+
+            if ( !empty( $content ) ) {
+                return $content;
+            }
 
         }
 
-        $zip = new \ZipArchive();
-        $zip->open( $zip_path );
-
-        $content = $zip->getFromName( '__meta/instructions.txt' );
-
-        if ( empty( $content ) ) {
-            $content = 'No instructions provided.';
-        }
-
-        return $content;
+        return 'No instructions provided.';
     }
 
     public function setUser( Users_UserStruct $user = null ) {

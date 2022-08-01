@@ -20,7 +20,7 @@ class ChunkReviewModel extends \Features\ReviewExtended\ChunkReviewModel {
      *
      * @throws \Exception
      */
-    public function recountAndUpdatePassFailResult(  \Projects_ProjectStruct $project  ) {
+    public function recountAndUpdatePassFailResult( \Projects_ProjectStruct $project ) {
 
         $this->chunk_review->penalty_points =
                 ChunkReviewDao::getPenaltyPointsForChunk( $this->chunk );
