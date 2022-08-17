@@ -166,7 +166,7 @@ class AnalyzeDecorator extends AbstractModelViewDecorator {
 
         $fs = FilesStorageFactory::create();
 
-        [ $zip_filename ] = explode( ZipArchiveExtended::INTERNAL_SEPARATOR, $files[ 0 ]->filename );
+        list( $zip_filename ) = explode( ZipArchiveExtended::INTERNAL_SEPARATOR, $files[ 0 ]->filename );
 
         if ( AbstractFilesStorage::pathinfo_fix( $zip_filename )[ 'extension' ] == "zip" ) {
 
