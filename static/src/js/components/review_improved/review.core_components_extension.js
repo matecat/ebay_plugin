@@ -11,6 +11,7 @@
   function overrideSegmentBodyFunctions(SegmentBody) {
     SegmentBody.prototype.getStatusMenu = function () {
       if (this.state.showStatusMenu) {
+          const sid = this.context.segment.sid;
         return (
           <ul
             className="statusmenu"
@@ -23,7 +24,7 @@
             <li>
               <a
                 className="draftStatusMenu"
-                data-sid={'segment-' + this.props.segment.sid}
+                data-sid={'segment-' + sid}
                 title="set draft as status"
                 onClick={this.changeStatus.bind(this, 'draft')}
               >
@@ -33,7 +34,7 @@
             <li>
               <a
                 className="translatedStatusMenu"
-                data-sid={'segment-' + this.props.segment.sid}
+                data-sid={'segment-' + sid}
                 title="set translated as status"
                 onClick={this.changeStatus.bind(this, 'translated')}
               >
@@ -43,7 +44,7 @@
             <li>
               <a
                 className="approvedStatusMenu"
-                data-sid={'segment-' + this.props.segment.sid}
+                data-sid={'segment-' + sid}
                 title="set approved as status"
                 onClick={this.changeStatus.bind(this, 'approved')}
               >
@@ -55,7 +56,7 @@
               <li>
                 <a
                   className="rejectedStatusMenu"
-                  data-sid={'segment-' + this.props.segment.sid}
+                  data-sid={'segment-' + sid}
                   title="set rejected as status"
                   onClick={this.changeStatus.bind(this, 'rejected')}
                 >
@@ -68,7 +69,7 @@
               <li>
                 <a
                   className="fx"
-                  data-sid={'segment-' + this.props.segment.sid}
+                  data-sid={'segment-' + sid}
                   title="set fixed as status"
                   onClick={this.changeStatus.bind(this, 'fixed')}
                 >
@@ -80,7 +81,7 @@
               <li>
                 <a
                   className="rb"
-                  data-sid={'segment-' + this.props.segment.sid}
+                  data-sid={'segment-' + sid}
                   title="set rebutted as status"
                   onClick={this.changeStatus.bind(this, 'rebutted')}
                 >
