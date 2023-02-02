@@ -21,7 +21,6 @@ class NewProjectDecorator extends \AbstractDecorator {
     protected $template;
 
     public function decorate() {
-        $this->template->append( 'footer_js', Routes::staticSrc( 'js/ebay-upload.js' ) );
         $this->template->append( 'footer_js', Routes::staticSrc( 'js/libs/datepicker.min.js' ) );
 
         $this->template->append( 'css_resources', Routes::staticSrc( 'css/datepicker.min.css' ) );
