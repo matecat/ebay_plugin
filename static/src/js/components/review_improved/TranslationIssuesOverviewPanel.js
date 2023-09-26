@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import {sortBy} from 'lodash'
 
 let ReviewTranslationVersion = require('./ReviewTranslationVersion').default
 class TranslationIssuesOverviewPanel extends React.Component {
@@ -13,7 +13,7 @@ class TranslationIssuesOverviewPanel extends React.Component {
       id_segment: parseInt(sid),
     })
 
-    let sorted = _.sortBy(versions, function (version) {
+    let sorted = sortBy(versions, function (version) {
       return parseInt(version.version_number)
     }).reverse()
     return sorted
